@@ -72,8 +72,8 @@ const ajaxHandler = new AjaxHandler();
 // FUNCTIONS TO LOAD ON PAGE
 
 $(window).on("load", function () {
-  fetchItAll();
-  fetchAllDepts();
+  getAll();
+  getAllDepartments();
   populateDeptsTable(); // New function for departments
   fetchAllLocations();
 });
@@ -153,45 +153,53 @@ $(document).ready(function () {
     $("#editLocationName").focus(); // Set focus
     $("#editLocationConfirmToast").toast("hide");
   });
+
+  $("#pills-contact-tab").on("shown.bs.tab", function (e) {
+    // Call your fetchAllLocations function to reload the data
+    fetchAllLocations();
+  });
 });
 
 // Tables //
 
-// Function to populate staff table
-function fetchItAll() {
+function getAll() {
   ajaxHandler.get(
-    "fetchItAll.php", // Relative URL
+    "getAll.php",
     function (response) {
-      $("#staffTable").empty(); // Clear existing rows
-
-      response.data.forEach((staff) => {
-        $("#staffTable").append(`
-          <tr>
-            <td id="personName"><div class='d-inline-flex w-75 overflow-auto'>${
-              staff.firstName + " " + staff.lastName
-            }</div></td>
-            <td class="col-dep"><div class='d-inline-flex w-75  col-dep'>${
-              staff.department
-            }</div></td>
-            <td class="col-loc tableHide"><div class='d-inline-flex w-75 col-loc'>${
-              staff.location
-            }</div></td>
-            <td class="tableHide"><div class='d-md-inline-flex'>${
-              staff.email
-            }</div></td>
-            <td><div class="d-flex">
-              <button type="button" class="btn btn-primary editPersonBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editPerson" data-id="${
-                staff.id
-              }title="Edit"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></button>
-              <button type="button" class="btn btn-danger deletePerson mx-auto" title="Delete"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
-              <td class="d-none">All Departments</td>
-              <td class="d-none" id="personId">${staff.id}</td>
-              <td class="d-none" id="deptId">${staff.departmentId}</td>
-              <td class="d-none" id="jobTitleTest">${staff.jobTitle}</td>
-            </div></td>
-          </tr>
-        `);
+      const rows = response.data.map((staff) => {
+        return `
+        <tr>
+          <td id="personName">
+            <div class='d-inline-flex w-75 overflow-auto'>${staff.firstName} ${staff.lastName}</div>
+          </td>
+          <td class="col-dep">
+            <div class='d-inline-flex w-75 col-dep'>${staff.department}</div>
+          </td>
+          <td class="col-loc tableHide">
+            <div class='d-inline-flex w-75 col-loc'>${staff.location}</div>
+          </td>
+          <td class="tableHide">
+            <div class='d-md-inline-flex'>${staff.email}</div>
+          </td>
+          <td>
+            <div class="d-flex">
+              <button type="button" class="btn btn-primary editPersonBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editPerson" data-id="${staff.id}" title="Edit">
+                <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
+              </button>
+              <button type="button" class="btn btn-danger deletePerson mx-auto" title="Delete">
+                <i class="fa-solid fa-trash" style="color: #ffffff;"></i>
+              </button>
+            </div>
+          </td>
+          <td class="d-none">All Departments</td>
+          <td class="d-none" id="personId">${staff.id}</td>
+          <td class="d-none" id="deptId">${staff.departmentId}</td>
+          <td class="d-none" id="jobTitleTest">${staff.jobTitle}</td>
+        </tr>`;
       });
+
+      // Join all rows and update the table body only once
+      $("#staffTable").html(rows.join(""));
     },
     function (error) {
       console.log("Error:", error);
@@ -199,51 +207,36 @@ function fetchItAll() {
   );
 }
 
-// Function to populate the departments table
 function populateDeptsTable() {
   ajaxHandler.get(
-    "fetchAllDepts.php", // Relative URL
+    "getAllDepartments.php",
     function (response) {
-      $("#departmentTable").empty(); // Clear existing rows
+      const rows = [];
 
       if (response.data && Array.isArray(response.data)) {
-        let data = response.data;
-        data.sort((a, b) => a.name.localeCompare(b.name));
+        const sortedData = response.data.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
 
-        data.forEach((department) => {
-          // Create a new row for each department
-          const $row = $("<tr>")
-            .append(`<td class="tableHide d-none">${department.id}</td>`)
-            .append(`<td>${department.name}</td>`)
-            .append(`<td>${department.location}</td>`).append(`
-              <td>
-                <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            `);
-
-          // Add a click event listener to the delete button
-          $row.find(".deleteDeptBtn").on("click", function () {
-            const departmentId = $(this).data("id");
-            // Call the delete department function with the departmentId
-            deleteDept(departmentId);
-          });
-
-          // Add a click event listener to the edit button
-          $row.find(".editDeptBtn").on("click", function () {
-            const departmentId = $(this).data("id");
-            // Trigger and populate the modal (similar to #editLocation)
-            $("#editDept2").modal("show");
-            populateEditDeptModal(departmentId); // Make sure to define this function
-          });
-
-          // Append the row to the table
-          $("#departmentTable").append($row);
+        sortedData.forEach((department) => {
+          rows.push(`
+          <tr>
+            <td class="tableHide d-none">${department.id}</td>
+            <td>${department.name}</td>
+            <td>${department.location}</td>
+            <td>
+              <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `);
         });
+
+        $("#departmentTable").html(rows.join(""));
       }
     },
     function (error) {
@@ -252,71 +245,73 @@ function populateDeptsTable() {
   );
 }
 
-// Function to populate departments dropdown
-function fetchAllDepts() {
+function getAllDepartments() {
   ajaxHandler.get(
-    "fetchAllDepts.php", // Relative URL
+    "getAllDepartments.php",
     function (response) {
-      console.log("Success:", response); // Debug line
-      $(".departments").empty();
-      $(".departments").append(
-        `<option value="fetchItAll" selected>All Departments</option>`
-      );
+      const options = [
+        `<option value="getAll" selected>All Departments</option>`,
+      ];
 
       if (response.data && Array.isArray(response.data)) {
-        let data = response.data;
-        data.sort((a, b) => a.name.localeCompare(b.name));
+        const sortedData = response.data.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
 
-        data.forEach((sec) => {
-          $(".departments").append(
-            `<option value=${sec.id}>${sec.name}</option>`
-          );
+        sortedData.forEach((sec) => {
+          options.push(`<option value=${sec.id}>${sec.name}</option>`);
         });
+
+        $(".departments").html(options.join(""));
       }
     },
     function (error) {
-      console.log("Error:", error); // Debug line
+      console.log("Error:", error);
     }
   );
 }
 
-// Function to populate locations dropdown and table
 function fetchAllLocations() {
   ajaxHandler.get(
-    "fetchAllLocations.php", // Relative URL
+    "fetchAllLocations.php",
     function (response) {
-      $(".locations").text("");
-      $("#locationTable").text("");
-      $(".locations").append(
-        `<option value="fetchItAll" selected>All Locations</option>`
-      );
+      let options = [`<option value="getAll" selected>All Locations</option>`];
+      let rows = [];
 
-      let data = response.data;
-      data.forEach((loc) => {
-        $(".locations").append(`<option value=${loc.id}>${loc.name}</option>`);
+      if (response.data && Array.isArray(response.data)) {
+        response.data.forEach((loc) => {
+          options.push(`<option value="${loc.id}">${loc.name}</option>`);
 
-        $("#locationTable").append(`
+          rows.push(`
           <tr>
-            <td class="d-none"><div class='d-inline-flex w-75 overflow-auto'>${loc.id}</div></td>
-            <td><div class='d-inline-flex w-75'>${loc.name}</div></td>                
-            <td><div class="d-flex">
-              <button type="button" class="btn btn-primary updateLocBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editLocation" data-id="${loc.id}" title="Edit"><i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i></button>
-              <button type="button" class="btn btn-danger deleteLocationBtn mx-auto" title="Delete"  data-id="${loc.id}"><i class="fa-solid fa-trash" style="color: #ffffff;"></i></button>
-              <input class="d-none" type="number" value=${loc.id} />
-              <input class="d-none" type="number" value=${loc.id} />
-            </div></td>
-          </tr>`);
-      });
+            <td class="d-none">${loc.id}</td>
+            <td>${loc.name}</td>
+            <td>${loc.departmentCount}</td> <!-- New column -->
+            <td>${loc.employeeCount}</td> <!-- New column -->
+            <td>
+              <div class="d-flex">
+                <button type="button" class="btn btn-primary updateLocBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editLocation" data-id="${loc.id}" title="Edit">
+                  <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
+                </button>
+                <button type="button" class="btn btn-danger deleteLocationBtn mx-auto" title="Delete" data-id="${loc.id}">
+                  <i class="fa-solid fa-trash" style="color: #ffffff;"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `);
+        });
 
-      $('#insertNewPerson select option[value="fetchItAll"]').attr("value", "");
-      $('#insertNewDepartment select option[value="fetchItAll"]').attr(
-        "value",
-        ""
-      );
-      $('#insertNewLocation select option[value="fetchItAll"').attr(
-        "value",
-        ""
-      );
+        $(".locations").html(options.join(""));
+        $("#locationTable").html(rows.join(""));
+
+        $('#insertNewPerson select option[value="getAll"]').attr("value", "");
+        $('#insertNewDepartment select option[value="getAll"]').attr(
+          "value",
+          ""
+        );
+        $('#insertNewLocation select option[value="getAll"]').attr("value", "");
+      }
     },
     function () {
       console.log("Error getting data.");
@@ -333,6 +328,17 @@ $("#addPerson").submit(function (e) {
   // Serialize the form data
   var formData = $("#addPerson").serialize();
 
+  // Convert serialized data to object
+  var formDataObj = {};
+  $.each(formData.split("&"), function (index, value) {
+    var item = value.split("=");
+    formDataObj[item[0]] = decodeURIComponent(item[1]);
+  });
+
+  // Extract first name and last name from formDataObj
+  var firstName = formDataObj["firstName"];
+  var lastName = formDataObj["lastName"];
+
   // Use AjaxHandler class to make POST request
   ajaxHandler.post(
     "addEmployee.php", // URL
@@ -341,7 +347,7 @@ $("#addPerson").submit(function (e) {
       // Success callback
       if (response) {
         $("#newStaffResponse").html(
-          "<div class='alert alert-success'>Successfully Added Staff Member</div>"
+          `<div class='alert alert-success'>${firstName} ${lastName} has been added to the directory</div>`
         );
 
         // Close the employee modal after 2 seconds
@@ -351,7 +357,7 @@ $("#addPerson").submit(function (e) {
           $("#newStaffResponse").empty(); // Clear the success message
         }, 2000);
 
-        fetchItAll(); // Reload the table
+        getAll(); // Reload the table
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
     },
@@ -371,15 +377,25 @@ $("#addDepartment").submit(function (e) {
   // Serialize the form data
   var formData = $("#addDepartment").serialize();
 
+  // Convert serialized data to object
+  var formDataObj = {};
+  $.each(formData.split("&"), function (index, value) {
+    var item = value.split("=");
+    formDataObj[item[0]] = decodeURIComponent(item[1]);
+  });
+
+  // Extract department name from formDataObj
+  var deptName = formDataObj["name"];
+
+  // Use AjaxHandler class to make POST request
   ajaxHandler.post(
-    "addDept.php", // URL
+    "insertDepartment.php", // URL
     formData, // Data
     function (response) {
       // Success callback
-      console.log("AJAX Response: ", response); // Log the AJAX response
       if (response) {
         $("#newDeptResponse").html(
-          "<div class='alert alert-success'>Successfully Added Department</div>"
+          `<div class='alert alert-success'>${deptName} has been added as a new department</div>`
         );
 
         // Close the department modal after 2 seconds
@@ -389,11 +405,8 @@ $("#addDepartment").submit(function (e) {
           $("#newDeptResponse").empty(); // Clear the success message
         }, 2000);
 
-        console.log("Success message should have been displayed."); // Log success message
-        populateDeptsTable();
+        populateDeptsTable(); // Reload the table
         $(".modal-backdrop").remove(); // Remove the backdrop
-      } else {
-        console.log("The response was empty or not true."); // Log failure message
       }
     },
     function () {
@@ -401,7 +414,6 @@ $("#addDepartment").submit(function (e) {
       $("#newDeptResponse").html(
         "<div class='alert alert-danger'>Error adding department</div>"
       );
-      console.log("Error callback was invoked."); // Log error message
     }
   );
 });
@@ -413,6 +425,16 @@ $("#addLocation").submit(function (e) {
   // Serialize the form data
   var formData = $("#addLocation").serialize();
 
+  // Convert serialized data to object
+  var formDataObj = {};
+  $.each(formData.split("&"), function (index, value) {
+    var item = value.split("=");
+    formDataObj[item[0]] = decodeURIComponent(item[1]);
+  });
+
+  // Extract location name from formDataObj
+  var locName = formDataObj["name"];
+
   // Use AjaxHandler class to make POST request
   ajaxHandler.post(
     "addLocation.php", // URL
@@ -421,7 +443,7 @@ $("#addLocation").submit(function (e) {
       // Success callback
       if (response) {
         $("#newLocResponse").html(
-          "<div class='alert alert-success'>Successfully Added Location</div>"
+          `<div class='alert alert-success'>${locName} has been added as a new location</div>`
         );
 
         // Close the location modal after 2 seconds
@@ -477,7 +499,7 @@ $("#editPersonForm").submit(function (e) {
             $("#editStaffResponse").html(""); // Clear the message
           }, 2000); // keep the modal open for 2 more seconds
 
-          fetchItAll(); // Refresh the table
+          getAll(); // Refresh the table
         } else {
           console.log("Error editing employee");
         }
@@ -502,7 +524,7 @@ $("#editPerson").on("show.bs.modal", function (e) {
   const personID = $(e.relatedTarget).attr("data-id");
 
   ajaxHandler.post(
-    "fetchEmployeeID.php",
+    "getPersonnelByID.php",
     { id: personID },
     function (result) {
       console.log("Received data:", result);
@@ -564,7 +586,7 @@ function showEditEmployeeConfirmation(confirmCallback) {
 function populateEditDeptModal(departmentId) {
   console.log("Populating Edit Department Modal for ID: ", departmentId);
   ajaxHandler.post(
-    "fetchDeptID.php",
+    "getDepartmentByID.php",
     { id: departmentId },
     function (result) {
       if (result.status.code.toString() === "200") {
@@ -634,7 +656,7 @@ $("#editDeptForm").submit(function (e) {
             $("#editDeptForm")[0].reset();
             $("#editDeptResponse").html("");
           }, 2000);
-          fetchAllDepts();
+          getAllDepartments();
           populateDeptsTable(); // New function for departments
         } else {
           $("#editDeptResponse").html(
@@ -719,7 +741,7 @@ $("#editLocationForm").submit(function (e) {
       function (response) {
         if (response.status && response.status.code === "200") {
           $("#editLocResponse").html(
-            "<div class='alert alert-success'>Successfully Edited Location</div>"
+            "<div class='alert alert-success'>Location Updated</div>"
           );
           setTimeout(() => {
             $("#editLocation").modal("hide");
@@ -748,13 +770,14 @@ $("#editLocationForm").submit(function (e) {
 // Remove Employees
 // Initialize global variable to hold the person ID to be deleted
 let personIDtoBeDelete;
+let personName;
 
 // Remove Employees
 $(document).on("click", ".deletePerson", function (e) {
-  e.preventDefault(); // prevents normal submit behavior
+  e.preventDefault();
   personIDtoBeDelete = $(this).closest("tr").find("#personId").text();
   let person = $(this).closest("tr").find("td");
-  let personName = $(person).eq(0).text();
+  personName = $(person).eq(0).text();
 
   // Update the toast body and show it
   $("#confirmEmployeeDelete .toast-body").text(
@@ -765,7 +788,7 @@ $(document).on("click", ".deletePerson", function (e) {
 
 // Function specifically for showing success toast
 function showSuccessToast(message) {
-  console.log(`Showing success toast with Message: ${message}`); // Debugging line
+  // console.log(`Showing success toast with Message: ${message}`); // Debugging line
   $("#successToast .toast-body").text(message);
   $("#successToast").toast("show");
 }
@@ -777,13 +800,12 @@ $("#confirmDelete").on("click", function () {
     "removeEmployee.php",
     { id: personIDtoBeDelete },
     function (response) {
-      console.log(response);
       if (response.status && response.status.code === "200") {
-        showSuccessToast("Successfully Deleted Employee");
+        showSuccessToast(`${personName} has been removed.`);
         setTimeout(() => {
           $("#confirmEmployeeDelete").toast("hide");
         }); // keep the toast open for 2 more seconds
-        fetchItAll(); // Refresh the table data
+        getAll(); // Refresh the table data
       }
     },
     function () {
@@ -799,12 +821,13 @@ $("#cancelDelete").on("click", function () {
 
 // Delete Department with Toast
 let departmentIdToBeDeleted;
+let departmentName; // Declare as a global variable
 
 $(document).on("click", ".deleteDeptBtn", function (e) {
   e.preventDefault();
   departmentIdToBeDeleted = $(this).data("id");
   let department = $(this).closest("tr").find("td");
-  let departmentName = $(department).eq(1).text();
+  departmentName = $(department).eq(1).text(); // Update the global variable
 
   // Update the toast body and show it
   $("#confirmDeptDelete .toast-body").text(
@@ -813,46 +836,53 @@ $(document).on("click", ".deleteDeptBtn", function (e) {
   $("#confirmDeptDelete").toast("show");
 });
 
-// Function to delete a department by ID
-function deleteDept(departmentId) {
-  // Update the toast body and show it
-  $("#confirmDeptDelete .toast-body").text(
-    `Are you sure you want to delete this department? This cannot be undone.`
-  );
-  $("#confirmDeptDelete").toast("show");
-
-  // Add this ID to the confirm button for later use
-  $("#confirmDeleteDept").data("id", departmentId);
-}
-
 // Confirm the deletion of the department
 $("#confirmDeptDeleteButton").on("click", function () {
+  // Hide the confirmation toast immediately
+  $("#confirmDeptDelete").toast("hide");
+
+  // First, check for dependencies via your PHP script
   ajaxHandler.post(
-    "deleteDeptID.php",
+    "deleteDept.php",
     { id: departmentIdToBeDeleted },
     function (response) {
-      $("#confirmDeptDelete").toast("hide"); // Hide the confirmation toast immediately
-      if (response.status && response.status.code === "200") {
-        // Show success toast
-        showSuccessToast("Successfully Deleted Department");
-        // Refresh the departments table
-        populateDeptsTable();
+      let deptNum = response.data[0].departmentCount;
+      if (response.status.code === "200" && deptNum === 0) {
+        // Now, proceed with deletion
+        ajaxHandler.post(
+          "deleteDepartmentByID.php",
+          { id: departmentIdToBeDeleted },
+          function (response) {
+            if (response.status.code === "200") {
+              showSuccessToast(`${departmentName} has been removed.`);
+              populateDeptsTable();
+            } else {
+              showToast("Error deleting department.", "red");
+            }
+          },
+          function () {
+            showToast("Error deleting department.", "red");
+          }
+        );
       } else {
-        showToast("Error deleting department.", "red");
+        showToast(
+          `${departmentName} cannot be removed due to dependent employees. ${deptNum} in total.`,
+          "red"
+        );
       }
     },
     function () {
-      $("#confirmDeptDelete").toast("hide"); // Hide the confirmation toast immediately
-      showToast("Error deleting department.", "red");
+      showToast("Error fetching department details.", "red");
     }
   );
 });
 
 // Cancel the department deletion
 $("#cancelDeptDelete").on("click", function () {
-  $("#confirmDeptDelete").toast("hide"); // Hide the confirmation toast immediately
+  $("#confirmDeptDelete").toast("hide");
 });
 
+// Remove a location
 let locationIdToBeDeleted;
 let locationName; // Declare as global variable
 
@@ -872,30 +902,48 @@ $(document).on("click", ".deleteLocationBtn", function (e) {
 
 // Confirm the deletion of the location
 $("#confirmLocationDeleteButton").on("click", function () {
+  // Hide the confirmation toast immediately
+  $("#confirmLocationDelete").toast("hide");
+
+  // First, check for dependencies via your PHP script
   ajaxHandler.post(
-    "removeLocationByID.php",
+    "removeLocation.php",
     { id: locationIdToBeDeleted },
     function (response) {
-      $("#confirmLocationDelete").toast("hide"); // Hide the confirmation toast immediately
-      if (response.status.code === "200") {
-        // Show success toast
-        showSuccessToast(`Successfully deleted ${locationName}.`); // Use the global variable
-        // Refresh the locations table
-        fetchAllLocations();
+      let locNum = response.data[0].locNum;
+      if (response.status.code === "200" && locNum === 0) {
+        // Now, proceed with deletion
+        ajaxHandler.post(
+          "removeLocationByID.php",
+          { id: locationIdToBeDeleted },
+          function (response) {
+            if (response.status.code === "200") {
+              showSuccessToast(`${locationName} has been removed.`);
+              fetchAllLocations();
+            } else {
+              showToast("Error deleting location.", "red");
+            }
+          },
+          function () {
+            showToast("Error deleting location.", "red");
+          }
+        );
       } else {
-        showToast("Error deleting location.", "red");
+        showToast(
+          `${locationName} cannot be removed due to dependent departments. ${locNum} in total.`,
+          "red"
+        );
       }
     },
     function () {
-      $("#confirmLocationDelete").toast("hide"); // Hide the confirmation toast immediately
-      showToast("Error deleting location.", "toast-red");
+      showToast("Error fetching location details.", "red");
     }
   );
 });
 
 // Cancel the deletion of the location
 $("#cancelLocationDelete").on("click", function () {
-  $("#confirmLocationDelete").toast("hide"); // Hide the confirmation toast immediately
+  $("#confirmLocationDelete").toast("hide");
 });
 
 // Function to show toast with color

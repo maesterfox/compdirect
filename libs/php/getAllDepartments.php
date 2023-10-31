@@ -25,9 +25,9 @@
 
 	}	
 
-
-
-	$query = 'SELECT p.id, p.lastName, p.firstName, p.jobTitle, p.email, d.name as department, d.id as departmentId, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) ORDER BY p.lastName, p.firstName, d.name, l.name';
+	
+	$query = 'SELECT department.id, department.name, department.locationID, location.name as location FROM department iNNER JOIN location ON department.locationID = location.id';
+	
 
 	$result = $conn->query($query);
 	
@@ -62,6 +62,4 @@
 	
 	mysqli_close($conn);
 
-	echo json_encode($output); 
-
-?>
+	echo json_encode($output);

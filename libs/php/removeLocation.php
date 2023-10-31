@@ -29,7 +29,7 @@
   // SQL statement accepts parameters and so is prepared to avoid SQL injection.
   // $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
-  $query = $conn->prepare('SELECT count(d.id) as locationCount, l.name as locationName FROM department d LEFT JOIN location l ON ( l.id = locationID) WHERE l.id =  ?');
+  $query = $conn->prepare('SELECT count(d.id) as locNum, l.name as locationName FROM department d LEFT JOIN location l ON ( l.id = locationID) WHERE l.id =  ?');
 
   $query->bind_param("i", $_REQUEST['id']);
 
@@ -68,5 +68,3 @@
   echo json_encode($output); 
 
   mysqli_close($conn);
-
-?>

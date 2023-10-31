@@ -1,62 +1,62 @@
 <?php
 
-	$executionStartTime = microtime(true);
+    $executionStartTime = microtime(true);
 
-	include("config.php");
+    include("config.php");
 
-	header('Content-Type: application/json; charset=UTF-8');
+    header('Content-Type: application/json; charset=UTF-8');
 
-	$conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
+    $conn = new mysqli($cd_host, $cd_user, $cd_password, $cd_dbname, $cd_port, $cd_socket);
 
-	if (mysqli_connect_errno()) {
-		
-		$output['status']['code'] = "300";
-		$output['status']['name'] = "failure";
-		$output['status']['description'] = "database unavailable";
-		$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-		$output['data'] = [];
+    if (mysqli_connect_errno()) {
+        
+        $output['status']['code'] = "300";
+        $output['status']['name'] = "failure";
+        $output['status']['description'] = "database unavailable";
+        $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+        $output['data'] = [];
 
-		mysqli_close($conn);
+        mysqli_close($conn);
 
-		echo json_encode($output);
+        echo json_encode($output);
 
-		exit;
+        exit;
 
-	}	
+    }
 
-	$query = 'SELECT id, name FROM location';
+    $query = 'SELECT l.id, l.name, (SELECT COUNT(d.id) FROM department d WHERE d.locationID = l.id) AS departmentCount, (SELECT COUNT(p.id) FROM personnel p LEFT JOIN department d ON p.departmentID = d.id WHERE d.locationID = l.id) AS employeeCount FROM location l';
 
-	$result = $conn->query($query);
-	
-	if (!$result) {
+    $result = $conn->query($query);
 
-		$output['status']['code'] = "400";
-		$output['status']['name'] = "executed";
-		$output['status']['description'] = "query failed";	
-		$output['data'] = [];
+    if (!$result) {
 
-		mysqli_close($conn);
+        $output['status']['code'] = "400";
+        $output['status']['name'] = "executed";
+        $output['status']['description'] = "query failed";    
+        $output['data'] = [];
 
-		echo json_encode($output); 
+        mysqli_close($conn);
 
-		exit;
+        echo json_encode($output); 
 
-	}
-   
-   	$data = [];
+        exit;
 
-	while ($row = mysqli_fetch_assoc($result)) {
+    }
+    
+    $data = [];
 
-		array_push($data, $row);
+    while ($row = mysqli_fetch_assoc($result)) {
 
-	}
+        array_push($data, $row);
 
-	$output['status']['code'] = "200";
-	$output['status']['name'] = "ok";
-	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	$output['data'] = $data;
-	
-	mysqli_close($conn);
+    }
 
-	echo json_encode($output);
+    $output['status']['code'] = "200";
+    $output['status']['name'] = "ok";
+    $output['status']['description'] = "success";
+    $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
+    $output['data'] = $data;
+
+    mysqli_close($conn);
+
+    echo json_encode($output);

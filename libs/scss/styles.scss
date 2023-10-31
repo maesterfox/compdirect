@@ -15,10 +15,11 @@ background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba
 
 // Existing styles for .nav-pills
 .nav-pills {
+  border: none;
 
   .nav-link {
 
-    border: 1px solid white;
+    // border: 1px solid white;
     margin: 5px;
     
 
@@ -107,32 +108,33 @@ a, button {
 
 
 
-#insertNewPerson {
-  z-index: 2000 !important;
-}
+// #insertNewPerson {
+//   z-index: 2000 !important;
+// }
 
-#insertNewDepartment {
-  z-index: 2000 !important;
-}
+// #insertNewDepartment {
+//   z-index: 2000 !important;
+// }
 
-#insertNewLocation {
-  z-index: 2000 !important;
-}
+// #insertNewLocation {
+//   z-index: 2000 !important;
+// }
 
-#editEmployeeConfirmToast {
-  z-index: 9999 !important; // Set a high value to ensure it appears above all other elements
-}
+// #editEmployeeConfirmToast {
+//   z-index: 9999 !important; // Set a high value to ensure it appears above all other elements
+// }
 
 
 // New #navbar styles
 #navbar {
   margin-top: 0;  // No top margin as it's a navbar
   padding: 10px;  // Similar padding to #main
-  border-bottom: 1px solid white;  // Border at the bottom to distinguish it from the main content
   border-radius: 0 0 10px 10px;  // Rounded corners at the bottom
   position: sticky;  // Make it stick to the top
   top: 0;  // Stick to the top of the page
   z-index: 1000;  // High z-index to make sure it's above other content
+  opacity: 0.7;
+
 }
 
 
@@ -145,13 +147,14 @@ background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba
   height: 100%;
   border: 1px solid white;
   border-radius: 10px;
-  position: sticky;
-  
+  position: sticky;  
 }
 
 .nav-link {
   font-weight: bold;
 }
+
+
 
 #tableHead {
   position: sticky;
@@ -159,8 +162,8 @@ background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba
 }
 // New styles for consistent tab content size
 .tab-content {
-  min-height: 500px;  // Adjust this value based on your needs
-  overflow: hidden;
+  min-height: 700px;  // Adjust this value based on your needs
+  overflow: scroll;
 }
 
 .table-wrapper, .table-wrapper-scroll-y {
@@ -172,6 +175,7 @@ background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba
     }
   }
 }
+
 
 
 #searchAndFilter, #icons {
@@ -207,20 +211,25 @@ nav.navbar {
 
 // Ensure all tables have the same height
 .table-wrapper, .table-wrapper-scroll-y {
-  min-height: 500px;  // Adjust based on your requirements
+  max-height: 500px;  // Adjust based on your requirements
   table {
     
     min-width: 100%;
 
-    th, td {
+    th {
       min-height: 50px;
       text-align: center;
+    }
+
+    td {
+      min-height: 50px;
+      text-align: left;
     }
   }
 }
 
 .tab-pane {
-  transition: opacity 0.8s ease-in-out; // Add this line for transition
+  transition: opacity 0.5s ease-in-out; // Add this line for transition
   &.fade {
     opacity: 0;
     display: block; // Ensures the pane can transition in
@@ -228,7 +237,7 @@ nav.navbar {
     overflow: hidden; // Ensures content doesn't spill
   }
   &.show {
-    opacity: .9;
+    opacity: .8;
     height: auto; // Allows content to expand
     overflow: visible; // Allows content to be seen
   }
@@ -254,11 +263,11 @@ nav.navbar {
 
 
 // Reduce spacing between action buttons
-#locationTable .action-buttons {
-  button {
-    margin-right: 5px;  // Adjust based on your requirements
-  }
-}
+// #locationTable .action-buttons {
+//   button {
+//     margin-right: 2px;  // Adjust based on your requirements
+//   }
+// }
 
 // Media Query for Mobile Devices
 @media only screen and (max-width: 768px) {  // You can adjust this breakpoint
