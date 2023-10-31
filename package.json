@@ -1,0 +1,20 @@
+{
+  "name": "compdirect",
+  "version": "1.0.0",
+  "description": "ITCS Project 2",
+  "main": "index.js",
+  "scripts": {
+    "start": "node-sass -w libs/scss/ -o libs/css/ --recursive"
+  },
+  "author": "David Fox",
+  "license": "MIT",
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.2",
+    "font-awesome": "^4.7.0",
+    "jquery": "^3.7.1",
+    "node-sass": "^9.0.0",
+    "sass": "^1.69.4"
+  },
+  "keywords": []
+}

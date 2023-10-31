@@ -1,0 +1,299 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
+
+// Global Styles
+* {
+  font-family: 'Poppins', sans-serif;  // Setting Poppins as the primary font
+  text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);  // Slight shadow for all text
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);  // Slight shadow for all boxes
+  
+}
+
+body {
+  background: rgb(9,9,121);
+background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba(5,2,54,1) 80%);
+}
+
+// Existing styles for .nav-pills
+.nav-pills {
+
+  .nav-link {
+
+    border: 1px solid white;
+    margin: 5px;
+    
+
+    &.active, &:hover {
+      box-shadow: 0 0 5px white;
+    }
+  }
+}
+
+// Additional styles for .nav-tabs
+.nav-tabs {
+  .nav-link {
+    border: 1px solid transparent;
+
+    &.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    &:hover {
+      border: 1px solid #ddd;
+    }
+  }
+}
+
+a, button {
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 0 5px white;
+  }
+}
+
+#myToast, #editLocationConfirmToast, #confirmEmployeeDelete, #editEmployeeConfirmToast, #confirmDeptDelete, #confirmLocationDelete, #successToast, #editDeptConfirmToast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
+  z-index: 1050; // To make sure it appears above modals
+}
+
+
+/* Custom Red Toast */
+.toast-red {
+  background-color: #911c1c; /* Red background */
+  color: white; /* White text */
+  box-shadow: 0 0 2px #911c1c, 0 0 6px #911c1c, 0 0 10px red;
+  border: 1px solid #911c1c;
+}
+
+.toast-red .toast-header {
+  background-color: #911c1c; /* Darker red for header */
+  color: white; /* White text */
+  text-shadow: 0 0 2px white;
+  font-size: 1.2rem;
+}
+
+.toast-red .toast-body {
+  color: white; /* White text */
+}
+
+/* Custom Green Toast */
+.toast-green {
+  background-color: #218838; /* Green background */
+  color: white; /* White text */
+  box-shadow: 0 0 2px #218838, 0 0 6px #218838, 0 0 10px lime;
+  border: 1px solid #218838;
+}
+
+.toast-green .toast-header {
+  background-color: #218838; /* Darker green for header */
+  color: white; /* White text */
+  text-shadow: 0 0 2px white;
+  font-size: 1.2rem;
+}
+
+.toast-green .toast-body {
+  color: white; /* White text */
+}
+
+
+
+
+
+
+
+
+#insertNewPerson {
+  z-index: 2000 !important;
+}
+
+#insertNewDepartment {
+  z-index: 2000 !important;
+}
+
+#insertNewLocation {
+  z-index: 2000 !important;
+}
+
+#editEmployeeConfirmToast {
+  z-index: 9999 !important; // Set a high value to ensure it appears above all other elements
+}
+
+
+// New #navbar styles
+#navbar {
+  margin-top: 0;  // No top margin as it's a navbar
+  padding: 10px;  // Similar padding to #main
+  border-bottom: 1px solid white;  // Border at the bottom to distinguish it from the main content
+  border-radius: 0 0 10px 10px;  // Rounded corners at the bottom
+  position: sticky;  // Make it stick to the top
+  top: 0;  // Stick to the top of the page
+  z-index: 1000;  // High z-index to make sure it's above other content
+}
+
+
+#main {
+  background: rgb(9,9,121);
+background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba(5,2,54,1) 80%);
+  margin-top: 10vh;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  height: 100%;
+  border: 1px solid white;
+  border-radius: 10px;
+  position: sticky;
+  
+}
+
+.nav-link {
+  font-weight: bold;
+}
+
+#tableHead {
+  position: sticky;
+  
+}
+// New styles for consistent tab content size
+.tab-content {
+  min-height: 500px;  // Adjust this value based on your needs
+  overflow: hidden;
+}
+
+.table-wrapper, .table-wrapper-scroll-y {
+  table {
+    min-width: 100%;  // Ensures that the table takes up the full width of the container
+    th, td {
+      min-height: 50px;  // Adjust this value based on your needs
+      text-align: center;
+    }
+  }
+}
+
+
+#searchAndFilter, #icons {
+  display: flex;
+}
+
+#addButton {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  box-shadow: 0 0 2px white;
+  border-radius: 1px;
+}
+
+#modalTitle {
+  border-radius: 8px;
+  box-shadow: 0px 1px 4px rgba(29, 42, 155, 0.904);
+}
+
+nav.navbar {
+  box-shadow: 0px 1px 2px rgba(16, 0, 107, 0.1);
+
+  a.navbar-brand {
+    text-shadow: 0 0 2px rgb(11, 10, 70);
+    transition: 0.3s ease-in-out;
+  }
+}
+
+#header {
+  color: rgb(8, 77, 182);
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+// Ensure all tables have the same height
+.table-wrapper, .table-wrapper-scroll-y {
+  min-height: 500px;  // Adjust based on your requirements
+  table {
+    
+    min-width: 100%;
+
+    th, td {
+      min-height: 50px;
+      text-align: center;
+    }
+  }
+}
+
+.tab-pane {
+  transition: opacity 0.8s ease-in-out; // Add this line for transition
+  &.fade {
+    opacity: 0;
+    display: block; // Ensures the pane can transition in
+    height: 0; 
+    overflow: hidden; // Ensures content doesn't spill
+  }
+  &.show {
+    opacity: .9;
+    height: auto; // Allows content to expand
+    overflow: visible; // Allows content to be seen
+  }
+}
+
+
+.btn-primary {
+  position: relative;
+  z-index: 1;
+
+  // Pseudo-element for gradient
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+    z-index: -1;
+  }
+}
+
+
+// Reduce spacing between action buttons
+#locationTable .action-buttons {
+  button {
+    margin-right: 5px;  // Adjust based on your requirements
+  }
+}
+
+// Media Query for Mobile Devices
+@media only screen and (max-width: 768px) {  // You can adjust this breakpoint
+  // Reduce font-size for table content
+  table {
+    font-size: 0.6rem;  // Reduce the font size
+    th, td {
+      padding: 4px;  // Reduce padding to fit content
+    }
+  }
+
+  // Reduce font-size for other elements if needed
+  .nav-link, button, #header {
+    font-size: 1.8rem;  // Reduce the font size for navigation links, buttons, and header
+  }
+
+  // Additional styling adjustments for mobile
+  // ...
+}
+
+// Media Query for Small Mobile Devices
+@media only screen and (max-width: 500px) {  // Adjust this breakpoint as needed
+  // Further reduce font-size for table content
+  table {
+    font-size: 0.6rem;  // Even smaller font size
+    th, td {
+      padding: 1px;  // Reduced padding
+    }
+  }
+
+  // Further reduce font-size for other elements
+  .nav-link, button, #header {
+    font-size: 1.2rem;  // Further reduced font size
+  }
+
+  // Additional styling adjustments for small screens
+  // ...
+}
