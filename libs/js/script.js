@@ -69,7 +69,7 @@ function showToast(message, toastId = "myToast") {
 // Create an instance of the AjaxHandler class
 const ajaxHandler = new AjaxHandler();
 
-// FUNCTIONS TO LOAD ON PAGE
+// Initial load functions
 
 $(window).on("load", function () {
   getAll();
@@ -162,6 +162,8 @@ $(document).ready(function () {
 
 // Tables //
 
+// Full Staff Table
+
 function getAll() {
   ajaxHandler.get(
     "getAll.php",
@@ -206,6 +208,8 @@ function getAll() {
     }
   );
 }
+
+// Departments Table
 
 function populateDeptsTable() {
   ajaxHandler.get(
@@ -270,6 +274,8 @@ function getAllDepartments() {
     }
   );
 }
+
+// Locations Table
 
 function fetchAllLocations() {
   ajaxHandler.get(

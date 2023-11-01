@@ -50,9 +50,11 @@
   <!-- <div id="preloader"></div> -->
 
 
-
+  <h1 id="company-directory-heading">Company Directory</h1>
   
   <div class="container" id="main">
+
+
 
     <!-------------------------------------- NAV LIST PILLS -------------------------------------->
 
@@ -137,54 +139,39 @@
 
       <!-------------------------------------- STAFF TAB CONTENT ------------------------------------->
 
-      <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
-        tabindex="0">
+<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+  <!-- Filter Employees by Dept Search -->
+  <div class="input-group mb-3" id="searchFilterDiv">
+    <select class="form-select deptDropdown searchFilter departments" aria-label="Default select example" id="staffDeptFilter">
+      <!-- Options go here -->
+    </select>
 
-        <!-- Filter Employees by Dept Search -->
+    <input type="text" class="form-control searchFilter" id="staffSearch" aria-label="Text input with dropdown button" placeholder="Search Staff..">
+    <button id="addPersonnel" type="button" title="addButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertNewPerson">
+      <i class="fa-solid fa-user-plus fa-xl"></i>
+    </button>
+  </div>
 
-        <div class="input-group mb-3" id="searchFilterDiv">
+  <!-- Scrollable Table Wrapper -->
+  <div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <table class="table table-bordered">
+      <thead class="text-center">
+        <tr>
+          <!-- table headings -->
+          <th id="tableHead" scope="col">Name</th>
+          <th id="tableHead" scope="col">Department</th>
+          <th id="tableHead" class="tableHide" scope="col">Location</th>
+          <th id="tableHead" class="tableHide" scope="col">Email</th>
+          <th id="tableHead" scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="staffTable">
+        <!-- Table content goes here -->
+      </tbody>
+    </table>
+  </div>
+</div>
 
-          <select class="form-select deptDropdown searchFilter departments" aria-label="Default select example"
-            id="staffDeptFilter">
-
-          </select>
-
-
-
-          <input type="text" class="form-control searchFilter" id="staffSearch"
-            aria-label="Text input with dropdown button" placeholder="Search Staff..">
-
-            <button id="addPersonnel" type="button" title="addButton" class="btn btn-primary" data-bs-toggle="modal"
-            data-bs-target="#insertNewPerson">
-            <i class="fa-solid fa-user-plus fa-xl"></i>
-          </button>
-
-        </div>
-
-
-        <div class="table-wrapper-scroll-y my-custom-scrollbar">
-          <table class="table table-bordered">
-            <thead class="text-center">
-              <tr>
-                <!-- table headings -->
-                <th id="tableHead" scope="col">Name</th>
-                <th id="tableHead" scope="col">Department</th>
-                <th id="tableHead" class="tableHide" scope="col">Location</th>
-                <th id="tableHead" class="tableHide" scope="col">Email</th>
-                <th id="tableHead" scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="staffTable">
-
-
-
-
-
-
-            </tbody>
-          </table>
-        </div>
-      </div>
 
       <!-------------------------------------- Departments -------------------------------------->
 
@@ -580,9 +567,19 @@
 </div>
 
 
+  <!-- Footer section -->
   
+  <footer id="company-directory-footer">
+    <p>Copyright &#169; 2023 Fox Web Design. All Rights Reserved.</p>
+    <div id="icon-row">
+      <a href="https://www.linkedin.com/in/davidfoxtechcode" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+      <a href="https://github.com/maesterfox" target="_blank" rel="noopener" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="https://stackoverflow.com/users/22631288/david-fox" target="_blank" rel="noopener" title="Stack Overflow"><i class="fab fa-stack-overflow"></i></a>
+      <a href="https://davidfoxfoxdev.co.uk" target="_blank" rel="noopener" title="My Portfolio Website"><i class="fas fa-globe"></i></a>
+    </div>
+  </footer>
   
-  
+
   
   
   
