@@ -163,15 +163,17 @@ $(document).ready(function () {
 // Tables //
 
 // Full Staff Table
-
 function getAll() {
+  // Perform AJAX GET request to getAll.php
   ajaxHandler.get(
     "getAll.php",
     function (response) {
+      // Map each staff member in the returned data to a table row
       const rows = response.data.map((staff) => {
         return `
         <tr>
           <td id="personName">
+            <!-- TODO: Consider making these class names more semantic -->
             <div class='d-inline-flex w-75 overflow-auto'>${staff.firstName} ${staff.lastName}</div>
           </td>
           <td class="col-dep">
@@ -181,9 +183,11 @@ function getAll() {
             <div class='d-inline-flex w-75 col-loc'>${staff.location}</div>
           </td>
           <td class="tableHide">
+            <!-- TODO: Consider if hiding email on smaller screens is the best approach -->
             <div class='d-md-inline-flex'>${staff.email}</div>
           </td>
           <td>
+            <!-- TODO: These buttons could be made into a reusable component -->
             <div class="d-flex">
               <button type="button" class="btn btn-primary editPersonBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editPerson" data-id="${staff.id}" title="Edit">
                 <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
@@ -193,6 +197,7 @@ function getAll() {
               </button>
             </div>
           </td>
+          <!-- TODO: Consider whether storing additional data in hidden table cells is the best approach -->
           <td class="d-none">All Departments</td>
           <td class="d-none" id="personId">${staff.id}</td>
           <td class="d-none" id="deptId">${staff.departmentId}</td>
@@ -200,117 +205,144 @@ function getAll() {
         </tr>`;
       });
 
+      // TODO: Consider adding a loading state while fetching data
       // Join all rows and update the table body only once
       $("#staffTable").html(rows.join(""));
     },
     function (error) {
+      // TODO: Implement a user-friendly error message
       console.log("Error:", error);
     }
   );
 }
 
-// Departments Table
-
+// Function to populate the Departments Table
 function populateDeptsTable() {
+  // Perform AJAX GET request to getAllDepartments.php
   ajaxHandler.get(
     "getAllDepartments.php",
     function (response) {
       const rows = [];
+      // TODO: Consider adding a loading state while fetching data
 
+      // Check if response data exists and is an array
       if (response.data && Array.isArray(response.data)) {
+        // Sort data by department name
         const sortedData = response.data.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
 
+        // Generate table rows
         sortedData.forEach((department) => {
           rows.push(`
-          <tr>
-            <td class="tableHide d-none">${department.id}</td>
-            <td>${department.name}</td>
-            <td>${department.location}</td>
-            <td>
-              <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `);
+            <tr>
+              <!-- TODO: Consider if hiding the ID is the best approach -->
+              <td class="tableHide d-none">${department.id}</td>
+              <td>${department.name}</td>
+              <td>${department.location}</td>
+              <td>
+                <!-- TODO: These buttons could be made into a reusable component -->
+                <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `);
         });
 
+        // Update the table body only once
         $("#departmentTable").html(rows.join(""));
       }
     },
     function (error) {
+      // TODO: Implement a user-friendly error message
       console.log("Error:", error);
     }
   );
 }
 
+// Function to get all departments for dropdowns
 function getAllDepartments() {
+  // Perform AJAX GET request to getAllDepartments.php
   ajaxHandler.get(
     "getAllDepartments.php",
     function (response) {
       const options = [
         `<option value="getAll" selected>All Departments</option>`,
       ];
+      // TODO: Consider adding a loading state while fetching data
 
+      // Check if response data exists and is an array
       if (response.data && Array.isArray(response.data)) {
+        // Sort data by department name
         const sortedData = response.data.sort((a, b) =>
           a.name.localeCompare(b.name)
         );
 
+        // Generate dropdown options
         sortedData.forEach((sec) => {
           options.push(`<option value=${sec.id}>${sec.name}</option>`);
         });
 
+        // Update the dropdown options only once
         $(".departments").html(options.join(""));
       }
     },
     function (error) {
+      // TODO: Implement a user-friendly error message
       console.log("Error:", error);
     }
   );
 }
 
-// Locations Table
-
+// Function to fetch all Locations
 function fetchAllLocations() {
+  // Perform AJAX GET request to fetchAllLocations.php
   ajaxHandler.get(
     "fetchAllLocations.php",
     function (response) {
+      // Initialize options for location dropdown and rows for location table
       let options = [`<option value="getAll" selected>All Locations</option>`];
       let rows = [];
+      // TODO: Consider adding a loading state while fetching data
 
+      // Check if response data exists and is an array
       if (response.data && Array.isArray(response.data)) {
+        // Populate options and rows based on received data
         response.data.forEach((loc) => {
           options.push(`<option value="${loc.id}">${loc.name}</option>`);
 
+          // Generate table rows
           rows.push(`
-          <tr>
-            <td class="d-none">${loc.id}</td>
-            <td>${loc.name}</td>
-            <td>${loc.departmentCount}</td> <!-- New column -->
-            <td>${loc.employeeCount}</td> <!-- New column -->
-            <td>
-              <div class="d-flex">
-                <button type="button" class="btn btn-primary updateLocBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editLocation" data-id="${loc.id}" title="Edit">
-                  <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
-                </button>
-                <button type="button" class="btn btn-danger deleteLocationBtn mx-auto" title="Delete" data-id="${loc.id}">
-                  <i class="fa-solid fa-trash" style="color: #ffffff;"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        `);
+            <tr>
+              <!-- TODO: Consider if hiding the ID is the best approach -->
+              <td class="d-none">${loc.id}</td>
+              <td>${loc.name}</td>
+              <td>${loc.departmentCount}</td> <!-- New column -->
+              <td>${loc.employeeCount}</td> <!-- New column -->
+              <td>
+                <!-- TODO: These buttons could be made into a reusable component -->
+                <div class="d-flex">
+                  <button type="button" class="btn btn-primary updateLocBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editLocation" data-id="${loc.id}" title="Edit">
+                    <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
+                  </button>
+                  <button type="button" class="btn btn-danger deleteLocationBtn mx-auto" title="Delete" data-id="${loc.id}">
+                    <i class="fa-solid fa-trash" style="color: #ffffff;"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `);
         });
 
+        // Update dropdown and table body only once to minimize DOM updates
         $(".locations").html(options.join(""));
         $("#locationTable").html(rows.join(""));
 
+        // TODO: Evaluate the necessity of these attribute changes
         $('#insertNewPerson select option[value="getAll"]').attr("value", "");
         $('#insertNewDepartment select option[value="getAll"]').attr(
           "value",
@@ -320,6 +352,7 @@ function fetchAllLocations() {
       }
     },
     function () {
+      // TODO: Implement a user-friendly error message
       console.log("Error getting data.");
     }
   );
@@ -334,12 +367,16 @@ $("#addPerson").submit(function (e) {
   // Serialize the form data
   var formData = $("#addPerson").serialize();
 
+  // TODO: Consider using const or let instead of var for modern JS practices
+
   // Convert serialized data to object
   var formDataObj = {};
   $.each(formData.split("&"), function (index, value) {
     var item = value.split("=");
     formDataObj[item[0]] = decodeURIComponent(item[1]);
   });
+
+  // TODO: Validate the formDataObj to ensure it contains all required fields
 
   // Extract first name and last name from formDataObj
   var firstName = formDataObj["firstName"];
@@ -351,6 +388,7 @@ $("#addPerson").submit(function (e) {
     formData, // Data
     function (response) {
       // Success callback
+      // TODO: Check the response for any specific success indicators
       if (response) {
         $("#newStaffResponse").html(
           `<div class='alert alert-success'>${firstName} ${lastName} has been added to the directory</div>`
@@ -361,6 +399,7 @@ $("#addPerson").submit(function (e) {
           $("#insertNewPerson").modal("hide");
           $("#addPerson")[0].reset(); // Clear the form
           $("#newStaffResponse").empty(); // Clear the success message
+          // TODO: Maybe refresh the department and location lists too?
         }, 2000);
 
         getAll(); // Reload the table
@@ -369,6 +408,7 @@ $("#addPerson").submit(function (e) {
     },
     function () {
       // Error callback
+      // TODO: Provide more informative error messages based on server response
       $("#newStaffResponse").html(
         "<div class='alert alert-danger'>Error adding staff member</div>"
       );
@@ -381,17 +421,21 @@ $("#addDepartment").submit(function (e) {
   e.preventDefault(); // Prevent default submit behavior
 
   // Serialize the form data
-  var formData = $("#addDepartment").serialize();
+  const formData = $("#addDepartment").serialize();
+
+  // TODO: Consider using const or let instead of var for modern JS practices
 
   // Convert serialized data to object
-  var formDataObj = {};
+  let formDataObj = {};
   $.each(formData.split("&"), function (index, value) {
-    var item = value.split("=");
+    const item = value.split("=");
     formDataObj[item[0]] = decodeURIComponent(item[1]);
   });
 
+  // TODO: Validate the formDataObj to ensure it contains all required fields
+
   // Extract department name from formDataObj
-  var deptName = formDataObj["name"];
+  const deptName = formDataObj["name"];
 
   // Use AjaxHandler class to make POST request
   ajaxHandler.post(
@@ -399,6 +443,7 @@ $("#addDepartment").submit(function (e) {
     formData, // Data
     function (response) {
       // Success callback
+      // TODO: Check the response for any specific success indicators
       if (response) {
         $("#newDeptResponse").html(
           `<div class='alert alert-success'>${deptName} has been added as a new department</div>`
@@ -409,14 +454,16 @@ $("#addDepartment").submit(function (e) {
           $("#insertNewDepartment").modal("hide");
           $("#addDepartment")[0].reset(); // Clear the form
           $("#newDeptResponse").empty(); // Clear the success message
+          // TODO: Maybe refresh the employee and location lists too?
         }, 2000);
 
-        populateDeptsTable(); // Reload the table
+        populateDeptsTable(); // Reload the department table
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
     },
     function () {
       // Error callback
+      // TODO: Provide more informative error messages based on server response
       $("#newDeptResponse").html(
         "<div class='alert alert-danger'>Error adding department</div>"
       );
@@ -429,17 +476,21 @@ $("#addLocation").submit(function (e) {
   e.preventDefault(); // Prevent default submit behavior
 
   // Serialize the form data
-  var formData = $("#addLocation").serialize();
+  const formData = $("#addLocation").serialize();
+
+  // TODO: Consider using const or let instead of var for modern JS practices
 
   // Convert serialized data to object
-  var formDataObj = {};
+  let formDataObj = {};
   $.each(formData.split("&"), function (index, value) {
-    var item = value.split("=");
+    const item = value.split("=");
     formDataObj[item[0]] = decodeURIComponent(item[1]);
   });
 
+  // TODO: Validate the formDataObj to ensure it contains all required fields
+
   // Extract location name from formDataObj
-  var locName = formDataObj["name"];
+  const locName = formDataObj["name"];
 
   // Use AjaxHandler class to make POST request
   ajaxHandler.post(
@@ -447,6 +498,7 @@ $("#addLocation").submit(function (e) {
     formData, // Data
     function (response) {
       // Success callback
+      // TODO: Check the response for any specific success indicators
       if (response) {
         $("#newLocResponse").html(
           `<div class='alert alert-success'>${locName} has been added as a new location</div>`
@@ -457,14 +509,16 @@ $("#addLocation").submit(function (e) {
           $("#insertNewLocation").modal("hide");
           $("#addLocation")[0].reset(); // Clear the form
           $("#newLocResponse").empty(); // Clear the success message
+          // TODO: Maybe refresh the employee and department lists too?
         }, 2000);
 
-        fetchAllLocations(); // Reload the table
+        fetchAllLocations(); // Reload the location table
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
     },
     function () {
       // Error callback
+      // TODO: Provide more informative error messages based on server response
       $("#newLocResponse").html(
         "<div class='alert alert-danger'>Error adding location</div>"
       );
@@ -774,11 +828,12 @@ $("#editLocationForm").submit(function (e) {
 // Remove Employees, Depts, Locations //
 
 // Remove Employees
-// Initialize global variable to hold the person ID to be deleted
+// Initialize global variables to hold the person ID and name to be deleted
 let personIDtoBeDelete;
 let personName;
 
-// Remove Employees
+// TODO: Consider encapsulating these globals into an object or a closure for better structure
+
 $(document).on("click", ".deletePerson", function (e) {
   e.preventDefault();
   personIDtoBeDelete = $(this).closest("tr").find("#personId").text();
@@ -792,12 +847,15 @@ $(document).on("click", ".deletePerson", function (e) {
   $("#confirmEmployeeDelete").toast("show");
 });
 
+// TODO: Maybe refactor this into its own function for reusability
+
 // Function specifically for showing success toast
 function showSuccessToast(message) {
-  // console.log(`Showing success toast with Message: ${message}`); // Debugging line
   $("#successToast .toast-body").text(message);
   $("#successToast").toast("show");
 }
+
+// TODO: Consider creating a function for showing error toasts for uniformity
 
 // Confirm the deletion
 $("#confirmDelete").on("click", function () {
@@ -806,15 +864,18 @@ $("#confirmDelete").on("click", function () {
     "removeEmployee.php",
     { id: personIDtoBeDelete },
     function (response) {
+      // TODO: Check the response status more thoroughly for extra safety
       if (response.status && response.status.code === "200") {
         showSuccessToast(`${personName} has been removed.`);
         setTimeout(() => {
           $("#confirmEmployeeDelete").toast("hide");
-        }); // keep the toast open for 2 more seconds
+        }, 2000); // keep the toast open for 2 more seconds
+        // TODO: Add error handling here in case 'getAll()' fails
         getAll(); // Refresh the table data
       }
     },
     function () {
+      // TODO: Improve this error message to be more informative
       showToast("Error deleting employee.");
     }
   );
@@ -825,15 +886,20 @@ $("#cancelDelete").on("click", function () {
   $("#confirmEmployeeDelete").toast("hide"); // Hide the toast
 });
 
+// TODO: Maybe add a function to reset the global variables after use
+
 // Delete Department with Toast
+// Declare global variables for department ID and name
 let departmentIdToBeDeleted;
-let departmentName; // Declare as a global variable
+let departmentName;
+
+// TODO: Consider encapsulating these globals into an object or a closure for better structure
 
 $(document).on("click", ".deleteDeptBtn", function (e) {
   e.preventDefault();
   departmentIdToBeDeleted = $(this).data("id");
   let department = $(this).closest("tr").find("td");
-  departmentName = $(department).eq(1).text(); // Update the global variable
+  departmentName = $(department).eq(1).text();
 
   // Update the toast body and show it
   $("#confirmDeptDelete .toast-body").text(
@@ -842,16 +908,21 @@ $(document).on("click", ".deleteDeptBtn", function (e) {
   $("#confirmDeptDelete").toast("show");
 });
 
+// TODO: Maybe refactor this into its own function for reusability
+
 // Confirm the deletion of the department
 $("#confirmDeptDeleteButton").on("click", function () {
   // Hide the confirmation toast immediately
   $("#confirmDeptDelete").toast("hide");
+
+  // TODO: Add a loading indicator here for better user experience
 
   // First, check for dependencies via your PHP script
   ajaxHandler.post(
     "deleteDept.php",
     { id: departmentIdToBeDeleted },
     function (response) {
+      // TODO: Validate the response more thoroughly
       let deptNum = response.data[0].departmentCount;
       if (response.status.code === "200" && deptNum === 0) {
         // Now, proceed with deletion
@@ -859,10 +930,12 @@ $("#confirmDeptDeleteButton").on("click", function () {
           "deleteDepartmentByID.php",
           { id: departmentIdToBeDeleted },
           function (response) {
+            // TODO: Validate the response more thoroughly
             if (response.status.code === "200") {
               showSuccessToast(`${departmentName} has been removed.`);
-              populateDeptsTable();
+              populateDeptsTable(); // Reload the table
             } else {
+              // TODO: Improve this error message to be more informative
               showToast("Error deleting department.", "red");
             }
           },
@@ -888,14 +961,19 @@ $("#cancelDeptDelete").on("click", function () {
   $("#confirmDeptDelete").toast("hide");
 });
 
+// TODO: Maybe add a function to reset the global variables after use
+
 // Remove a location
+// Declare global variables for location ID and name
 let locationIdToBeDeleted;
-let locationName; // Declare as global variable
+let locationName;
+
+// TODO: Consider encapsulating these global variables into an object or a closure for better code organization.
 
 // Function to delete a Location by ID
 $(document).on("click", ".deleteLocationBtn", function (e) {
   e.preventDefault();
-  locationIdToBeDeleted = parseInt($(this).attr("data-id"));
+  locationIdToBeDeleted = parseInt($(this).attr("data-id")); // Convert to integer
   let location = $(this).closest("tr").find("td");
   locationName = $(location).eq(1).text(); // Update the global variable
 
@@ -906,16 +984,21 @@ $(document).on("click", ".deleteLocationBtn", function (e) {
   $("#confirmLocationDelete").toast("show");
 });
 
+// TODO: Consider refactoring the above into its own function for reusability.
+
 // Confirm the deletion of the location
 $("#confirmLocationDeleteButton").on("click", function () {
   // Hide the confirmation toast immediately
   $("#confirmLocationDelete").toast("hide");
+
+  // TODO: Add a loading indicator here for a better user experience.
 
   // First, check for dependencies via your PHP script
   ajaxHandler.post(
     "removeLocation.php",
     { id: locationIdToBeDeleted },
     function (response) {
+      // TODO: Validate the response more thoroughly.
       let locNum = response.data[0].locNum;
       if (response.status.code === "200" && locNum === 0) {
         // Now, proceed with deletion
@@ -923,10 +1006,12 @@ $("#confirmLocationDeleteButton").on("click", function () {
           "removeLocationByID.php",
           { id: locationIdToBeDeleted },
           function (response) {
+            // TODO: Validate the response more thoroughly.
             if (response.status.code === "200") {
               showSuccessToast(`${locationName} has been removed.`);
-              fetchAllLocations();
+              fetchAllLocations(); // Refresh the table
             } else {
+              // TODO: Make this error message more informative based on server's response.
               showToast("Error deleting location.", "red");
             }
           },
@@ -951,6 +1036,8 @@ $("#confirmLocationDeleteButton").on("click", function () {
 $("#cancelLocationDelete").on("click", function () {
   $("#confirmLocationDelete").toast("hide");
 });
+
+// TODO: Consider adding a function to reset the global variables after use.
 
 // Function to show toast with color
 function showToast(message, color) {
