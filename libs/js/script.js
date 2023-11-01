@@ -1,14 +1,14 @@
-///////////////// PRELOADER //////////////
+// PRELOADER //
 
-// $(window).on("load", function () {
-//   if ($("#preloader").length) {
-//     $("#preloader")
-//       .delay(1000)
-//       .fadeOut("slow", function () {
-//         $(this).remove();
-//       });
-//   }
-// });
+$(window).on("load", function () {
+  if ($("#preloader").length) {
+    $("#preloader")
+      .delay(2000)
+      .fadeOut("slow", function () {
+        $(this).remove();
+      });
+  }
+});
 
 class AjaxHandler {
   constructor() {
@@ -61,7 +61,7 @@ var toastList = toastElList.map(function (toastEl) {
 });
 
 function showToast(message, toastId = "myToast") {
-  console.log(`Showing toast with ID: ${toastId}, Message: ${message}`); // Debugging line
+  //console.log(`Showing toast with ID: ${toastId}, Message: ${message}`); // Debugging line
   $(`#${toastId} .toast-body`).text(message);
   $(`#${toastId}`).toast("show");
 }
@@ -81,18 +81,18 @@ $(window).on("load", function () {
 // Document Ready Event Handlers and Initialization Block
 
 $(document).ready(function () {
-  // Staff search
-  $("#staffSearch").on("keyup", function () {
+  // Employee search
+  $("#employeeSearch").on("keyup", function () {
     var value = $(this).val().toLowerCase();
-    $("#staffTable tr ").filter(function () {
+    $("#employeeTable tr ").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
     });
   });
 
   // Department Filter
-  $("#staffDeptFilter").on("change", function () {
-    var value = $("#staffDeptFilter option:selected").text().toLowerCase();
-    $("#staffTable tr").filter(function () {
+  $("#employeeDeptFilter").on("change", function () {
+    var value = $("#employeeDeptFilter option:selected").text().toLowerCase();
+    $("#employeeTable tr").filter(function () {
       $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
     });
   });
@@ -114,24 +114,24 @@ $(document).ready(function () {
   });
 
   // Focus on first input field when the modal is shown for Person
-  $("#insertNewPerson").on("shown.bs.modal", function () {
+  $("#insertNewEmployee").on("shown.bs.modal", function () {
     $(".modal-backdrop").remove(); // Remove backdrop
     $("#addFirstName").focus();
-    console.log("Modal is shown");
+    // console.log("Modal is shown");
   });
 
   // Focus on first input field when the modal is shown for Department
   $("#insertNewDepartment").on("shown.bs.modal", function () {
     $(".modal-backdrop").remove(); // Remove backdrop
     $("#deptName").focus();
-    console.log("Modal is shown for Add Department");
+    // console.log("Modal is shown for Add Department");
   });
 
   // Focus on first input field when the modal is shown for Location
   $("#insertNewLocation").on("shown.bs.modal", function () {
     $(".modal-backdrop").remove(); // Remove backdrop
     $("#newLocName").focus();
-    console.log("Modal is shown for Add Location");
+    //console.log("Modal is shown for Add Location");
   });
 
   // Populate edit employee form
@@ -162,34 +162,34 @@ $(document).ready(function () {
 
 // Tables //
 
-// Full Staff Table
+// Full employee Table
 function getAll() {
   // Perform AJAX GET request to getAll.php
   ajaxHandler.get(
     "getAll.php",
     function (response) {
-      // Map each staff member in the returned data to a table row
-      const rows = response.data.map((staff) => {
+      // Map each employee member in the returned data to a table row
+      const rows = response.data.map((employee) => {
         return `
         <tr>
           <td id="personName">
             <!-- TODO: Consider making these class names more semantic -->
-            <div class='d-inline-flex w-75 overflow-auto'>${staff.firstName} ${staff.lastName}</div>
+            <div class='d-inline-flex w-75 overflow-auto'>${employee.firstName} ${employee.lastName}</div>
           </td>
           <td class="col-dep">
-            <div class='d-inline-flex w-75 col-dep'>${staff.department}</div>
+            <div class='d-inline-flex w-75 col-dep'>${employee.department}</div>
           </td>
           <td class="col-loc tableHide">
-            <div class='d-inline-flex w-75 col-loc'>${staff.location}</div>
+            <div class='d-inline-flex w-75 col-loc'>${employee.location}</div>
           </td>
           <td class="tableHide">
             <!-- TODO: Consider if hiding email on smaller screens is the best approach -->
-            <div class='d-md-inline-flex'>${staff.email}</div>
+            <div class='d-md-inline-flex'>${employee.email}</div>
           </td>
           <td>
             <!-- TODO: These buttons could be made into a reusable component -->
             <div class="d-flex">
-              <button type="button" class="btn btn-primary editPersonBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editPerson" data-id="${staff.id}" title="Edit">
+              <button type="button" class="btn btn-primary editPersonBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editPerson" data-id="${employee.id}" title="Edit">
                 <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
               </button>
               <button type="button" class="btn btn-danger deletePerson mx-auto" title="Delete">
@@ -199,66 +199,94 @@ function getAll() {
           </td>
           <!-- TODO: Consider whether storing additional data in hidden table cells is the best approach -->
           <td class="d-none">All Departments</td>
-          <td class="d-none" id="personId">${staff.id}</td>
-          <td class="d-none" id="deptId">${staff.departmentId}</td>
-          <td class="d-none" id="jobTitleTest">${staff.jobTitle}</td>
+          <td class="d-none" id="personId">${employee.id}</td>
+          <td class="d-none" id="deptId">${employee.departmentId}</td>
+          <td class="d-none" id="jobTitleTest">${employee.jobTitle}</td>
         </tr>`;
       });
 
       // TODO: Consider adding a loading state while fetching data
       // Join all rows and update the table body only once
-      $("#staffTable").html(rows.join(""));
+      $("#employeeTable").html(rows.join(""));
     },
     function (error) {
-      // TODO: Implement a user-friendly error message
+      // Show an error message in the table
+      $("#employeeTable").html(`<tr><td colspan='8'>Error: ${error}</td></tr>`);
+
+      // Log the error to the console for debugging
       console.log("Error:", error);
     }
   );
 }
 
-// Function to populate the Departments Table
+// Populate Departments Table
+function groupEmployeesByDepartment(employees) {
+  const departmentCounts = {};
+
+  employees.forEach((employee) => {
+    const deptId = employee.departmentId;
+    departmentCounts[deptId] = (departmentCounts[deptId] || 0) + 1;
+  });
+
+  return departmentCounts;
+}
+
 function populateDeptsTable() {
-  // Perform AJAX GET request to getAllDepartments.php
+  // First fetch all employees
   ajaxHandler.get(
-    "getAllDepartments.php",
-    function (response) {
-      const rows = [];
-      // TODO: Consider adding a loading state while fetching data
+    "getAll.php",
+    function (employeeResponse) {
+      // Group employees by department
+      const departmentCounts = groupEmployeesByDepartment(
+        employeeResponse.data
+      );
 
-      // Check if response data exists and is an array
-      if (response.data && Array.isArray(response.data)) {
-        // Sort data by department name
-        const sortedData = response.data.sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
+      // Then fetch all departments
+      ajaxHandler.get(
+        "getAllDepartments.php",
+        function (deptResponse) {
+          const rows = [];
+          if (deptResponse.data && Array.isArray(deptResponse.data)) {
+            const sortedData = deptResponse.data.sort((a, b) =>
+              a.name.localeCompare(b.name)
+            );
 
-        // Generate table rows
-        sortedData.forEach((department) => {
-          rows.push(`
-            <tr>
-              <!-- TODO: Consider if hiding the ID is the best approach -->
-              <td class="tableHide d-none">${department.id}</td>
-              <td>${department.name}</td>
-              <td>${department.location}</td>
-              <td>
-                <!-- TODO: These buttons could be made into a reusable component -->
-                <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          `);
-        });
+            sortedData.forEach((department) => {
+              const employeeCount = departmentCounts[department.id] || "0";
+              rows.push(`
+                <tr>
+                  <td class="tableHide d-none">${department.id}</td>
+                  <td>${department.name}</td>
+                  <td>${department.location}</td>
+                  <td>${employeeCount}</td> <!-- New column for employee count -->
+                  <td>
+                    <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              `);
+            });
+          }
 
-        // Update the table body only once
-        $("#departmentTable").html(rows.join(""));
-      }
+          // Update the table body only once
+          $("#departmentTable").html(rows.join(""));
+        },
+        function (error) {
+          $("#departmentTable").html(
+            `<tr><td colspan='5'>Error fetching departments: ${error}</td></tr>`
+          );
+          console.log("Error:", error);
+        }
+      );
     },
     function (error) {
-      // TODO: Implement a user-friendly error message
+      $("#departmentTable").html(
+        `<tr><td colspan='5'>Error fetching employees: ${error}</td></tr>`
+      );
       console.log("Error:", error);
     }
   );
@@ -292,7 +320,9 @@ function getAllDepartments() {
       }
     },
     function (error) {
-      // TODO: Implement a user-friendly error message
+      $(".departments").html(
+        '<option value="">Error fetching departments</option>'
+      );
       console.log("Error:", error);
     }
   );
@@ -324,7 +354,6 @@ function fetchAllLocations() {
               <td>${loc.departmentCount}</td> <!-- New column -->
               <td>${loc.employeeCount}</td> <!-- New column -->
               <td>
-                <!-- TODO: These buttons could be made into a reusable component -->
                 <div class="d-flex">
                   <button type="button" class="btn btn-primary updateLocBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editLocation" data-id="${loc.id}" title="Edit">
                     <i class="fa-solid fa-pen-to-square" style="color: #ffffff;"></i>
@@ -337,13 +366,14 @@ function fetchAllLocations() {
             </tr>
           `);
         });
+        // TODO: Consider making buttons into reusable components
 
         // Update dropdown and table body only once to minimize DOM updates
         $(".locations").html(options.join(""));
         $("#locationTable").html(rows.join(""));
 
         // TODO: Evaluate the necessity of these attribute changes
-        $('#insertNewPerson select option[value="getAll"]').attr("value", "");
+        $('#insertNewEmployee select option[value="getAll"]').attr("value", "");
         $('#insertNewDepartment select option[value="getAll"]').attr(
           "value",
           ""
@@ -351,9 +381,11 @@ function fetchAllLocations() {
         $('#insertNewLocation select option[value="getAll"]').attr("value", "");
       }
     },
-    function () {
-      // TODO: Implement a user-friendly error message
-      console.log("Error getting data.");
+    function (error) {
+      $("#locationTable").html(
+        `<tr><td colspan='5'>Error fetching locations: ${error}</td></tr>`
+      );
+      console.log("Error getting data:", error);
     }
   );
 }
@@ -361,11 +393,11 @@ function fetchAllLocations() {
 // Add Employees, Depts, Locations //
 
 // Handle form submission for adding an employee
-$("#addPerson").submit(function (e) {
+$("#addEmployee").submit(function (e) {
   e.preventDefault(); // Prevent default submit behavior
 
   // Serialize the form data
-  var formData = $("#addPerson").serialize();
+  var formData = $("#addEmployee").serialize();
 
   // TODO: Consider using const or let instead of var for modern JS practices
 
@@ -379,8 +411,8 @@ $("#addPerson").submit(function (e) {
   // TODO: Validate the formDataObj to ensure it contains all required fields
 
   // Extract first name and last name from formDataObj
-  var firstName = formDataObj["firstName"];
-  var lastName = formDataObj["lastName"];
+  const firstName = formDataObj["firstName"];
+  const lastName = formDataObj["lastName"];
 
   // Use AjaxHandler class to make POST request
   ajaxHandler.post(
@@ -390,15 +422,15 @@ $("#addPerson").submit(function (e) {
       // Success callback
       // TODO: Check the response for any specific success indicators
       if (response) {
-        $("#newStaffResponse").html(
+        $("#newemployeeResponse").html(
           `<div class='alert alert-success'>${firstName} ${lastName} has been added to the directory</div>`
         );
 
         // Close the employee modal after 2 seconds
         setTimeout(() => {
-          $("#insertNewPerson").modal("hide");
-          $("#addPerson")[0].reset(); // Clear the form
-          $("#newStaffResponse").empty(); // Clear the success message
+          $("#insertNewEmployee").modal("hide");
+          $("#addEmployee")[0].reset(); // Clear the form
+          $("#newemployeeResponse").empty(); // Clear the success message
           // TODO: Maybe refresh the department and location lists too?
         }, 2000);
 
@@ -406,11 +438,10 @@ $("#addPerson").submit(function (e) {
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
     },
-    function () {
+    function (error) {
       // Error callback
-      // TODO: Provide more informative error messages based on server response
-      $("#newStaffResponse").html(
-        "<div class='alert alert-danger'>Error adding staff member</div>"
+      $("#newemployeeResponse").html(
+        `<div class='alert alert-danger'>Error adding employee member: ${error}</div>`
       );
     }
   );
@@ -550,13 +581,13 @@ $("#editPersonForm").submit(function (e) {
       formData,
       function (response) {
         if (response.status && Number(response.status.code) === 200) {
-          $("#editStaffResponse").html(
+          $("#editEmployeeResponse").html(
             "<div class='alert alert-success'>Successfully Edited Employee</div>"
           );
           setTimeout(() => {
             $("#editPerson").modal("hide");
             $("#editPersonForm")[0].reset();
-            $("#editStaffResponse").html(""); // Clear the message
+            $("#editEmployeeResponse").html(""); // Clear the message
           }, 2000); // keep the modal open for 2 more seconds
 
           getAll(); // Refresh the table
@@ -587,8 +618,8 @@ $("#editPerson").on("show.bs.modal", function (e) {
     "getPersonnelByID.php",
     { id: personID },
     function (result) {
-      console.log("Received data:", result);
-      console.log("Type of status code:", typeof result.status.code);
+      // console.log("Received data:", result);
+      // console.log("Type of status code:", typeof result.status.code);
 
       if (Number(result.status.code) === 200) {
         const personnel = result.data.personnel[0];
@@ -609,7 +640,7 @@ $("#editPerson").on("show.bs.modal", function (e) {
 });
 
 function showEditEmployeeConfirmation(confirmCallback) {
-  console.log("showEditEmployeeConfirmation called"); // Debugging
+  //console.log("showEditEmployeeConfirmation called"); // Debugging
 
   // Show the toast
   $("#editEmployeeConfirmToast").toast("show");
@@ -622,7 +653,7 @@ function showEditEmployeeConfirmation(confirmCallback) {
 
   // Attach click handlers after the toast is fully visible
   $("#editEmployeeConfirmToast").on("shown.bs.toast", function () {
-    console.log("Toast is now shown"); // Debugging
+    //console.log("Toast is now shown"); // Debugging
 
     // Remove any previous click handlers to avoid multiple triggers
     $("#confirmEditEmployee").off();
@@ -630,13 +661,13 @@ function showEditEmployeeConfirmation(confirmCallback) {
 
     // Attach new click handlers
     $("#confirmEditEmployee").click(function () {
-      console.log("Confirm button clicked"); // Debugging
+      //console.log("Confirm button clicked"); // Debugging
       confirmCallback();
       $("#editEmployeeConfirmToast").toast("hide");
     });
 
     $("#cancelEditEmployee").click(function () {
-      console.log("Cancel button clicked"); // Debugging
+      //console.log("Cancel button clicked"); // Debugging
       $("#editEmployeeConfirmToast").toast("hide");
     });
   });
@@ -644,29 +675,52 @@ function showEditEmployeeConfirmation(confirmCallback) {
 
 // Function to populate the Edit Department modal with current data
 function populateEditDeptModal(departmentId) {
-  console.log("Populating Edit Department Modal for ID: ", departmentId);
+  // Validate departmentId
+  if (!departmentId) {
+    console.error("Department ID is not valid.");
+    return;
+  }
+
   ajaxHandler.post(
     "getDepartmentByID.php",
     { id: departmentId },
     function (result) {
-      if (result.status.code.toString() === "200") {
-        $("#deptId").val(result.data[0].id);
-        console.log("Populated deptId: ", $("#deptId").val());
-        $("#editDeptName").val(result.data[0].name);
-        $("#editDeptLocation").val(result.data[0].locationID);
+      // Validate result object and its properties
+      if (result && result.status && result.status.code && result.data) {
+        if (result.status.code.toString() === "200") {
+          $("#deptId").val(result.data[0].id);
+          $("#editDeptName").val(result.data[0].name);
+          $("#editDeptLocation").val(result.data[0].locationID);
+        } else {
+          console.error(
+            "Error getting department data. resultCode is not 200."
+          );
+          // Optionally, display an error message on the modal
+          $("#editDeptResponse").html(
+            "<div class='alert alert-danger'>Failed to fetch department data.</div>"
+          );
+        }
       } else {
-        console.log("Error getting department data. resultCode is not 200.");
+        console.error("Invalid response structure.");
+        // Optionally, display an error message on the modal
+        $("#editDeptResponse").html(
+          "<div class='alert alert-danger'>Invalid response structure.</div>"
+        );
       }
     },
-    function () {
-      console.log("Error fetching department data.");
+    function (error) {
+      console.error("Error fetching department data:", error);
+      // Optionally, display an error message on the modal
+      $("#editDeptResponse").html(
+        `<div class='alert alert-danger'>Error fetching department data: ${error}</div>`
+      );
     }
   );
 }
 
 // Function to show edit department confirmation toast
 function showEditDeptConfirmation(confirmCallback) {
-  console.log("Inside showEditDeptConfirmation()");
+  //console.log("Inside showEditDeptConfirmation()");
 
   $("#editDeptConfirmToast").toast("show");
 
@@ -697,11 +751,11 @@ $("#editDeptForm").submit(function (e) {
     locationID: $("#editDeptLocation").val(),
   };
 
-  console.log("Handling form submission for editing a department.");
-  console.log("Form Data: ", formData);
+  //console.log("Handling form submission for editing a department.");
+  //console.log("Form Data: ", formData);
 
   showEditDeptConfirmation(function () {
-    console.log("Inside confirmCallback");
+    //console.log("Inside confirmCallback");
     ajaxHandler.post(
       "editDept.php",
       formData,
@@ -767,7 +821,7 @@ $("#editLocation").on("show.bs.modal", function (e) {
 
 // Function to show edit location confirmation toast
 function showEditLocationConfirmation(confirmCallback) {
-  console.log(confirmCallback);
+  //console.log(confirmCallback);
   $("#editLocationConfirmToast").toast("show"); // Assuming your toast ID for location is 'editLocationConfirmToast'
 
   // Attach click handlers after the toast is fully visible
@@ -1021,7 +1075,7 @@ $("#confirmLocationDeleteButton").on("click", function () {
         );
       } else {
         showToast(
-          `${locationName} cannot be removed due to dependent departments. ${locNum} in total.`,
+          `${locationName} cannot be removed due to dependent departments.`,
           "red"
         );
       }

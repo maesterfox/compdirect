@@ -9,7 +9,6 @@
 }
 
 body {
-  background: rgb(9,9,121);
 background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba(5,2,54,1) 80%);
 }
 
@@ -144,10 +143,6 @@ a, button {
   border-radius: 1px;
 }
 
-#modalTitle {
-  border-radius: 8px;
-  box-shadow: 0px 1px 4px rgba(29, 42, 155, 0.904);
-}
 
 nav.navbar {
   box-shadow: 0px 1px 2px rgba(16, 0, 107, 0.1);
@@ -198,10 +193,23 @@ nav.navbar {
       text-align: left;
     }
 
-    // Fixed width for 'Actions' column
-    th:last-child, td:last-child {
-      width: 110px;
-    }
+   /* Fixed width and centered text for 'Employee Count' column */
+   th:nth-child(3), td:nth-child(3) {
+    width: 110px;
+    text-align: center;
+  }
+th:nth-last-child(2), td:nth-last-child(2) {
+  width: 110px;
+  text-align: center;
+}
+
+/* Fixed width and centered text for 'Edit/Delete' column */
+th:last-child, td:last-child {
+  width: 110px;
+  text-align: center;
+}
+
+
   }
 }
 
@@ -222,7 +230,7 @@ nav.navbar {
   }
 
   &.show {
-    opacity: .8;
+    opacity: 1;
     height: auto; // Allows content to expand
     overflow-y: auto; // Enable vertical scroll when content expands
   }
@@ -320,3 +328,63 @@ nav.navbar {
     display: none;
   }
 }
+
+
+// Preloader 
+
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba(5,2,54,1) 80%);
+  z-index: 9999;
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150px;
+    height: 150px;
+    border: 15px solid rgba(9,9,121,1) ;
+    border-radius: 50%;
+    border-top-color: #00fff9;  // Neon blue color
+    animation: spin 1s linear infinite, color-change 2s linear infinite;
+    // Enhanced box-shadow
+  box-shadow: 
+  0 0 10px #00fff9,  // Slight glow
+  0 0 30px #00fff9,  // Medium glow
+  0 0 60px #00fff9,  // Strong glow
+  0 0 100px #00fff9, // Very strong glow
+  0 0 120px #00fff9, // Intense glow
+  0 0 150px #00fff9, // Extremely intense glow
+  0 0 200px #00fff9; // Maximum glow
+}
+
+  
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes color-change {
+  0% {
+    border-top-color: #00fff9;  // Neon blue
+    box-shadow: 0 0 10px #00fff9, 0 0 30px #00fff9, 0 0 60px #ffffff, 0 0 120px #00fff9;
+  }
+  50% {
+    border-top-color: #ffffff;  // White
+    box-shadow: 0 0 10px #ffffff, 0 0 30px #ffffff, 0 0 60px #00fff9, 0 0 120px #ffffff;
+  }
+  100% {
+    border-top-color: #00fff9;  // Neon blue
+    box-shadow: 0 0 10px #00fff9, 0 0 30px #00fff9, 0 0 60px #ffffff, 0 0 120px #00fff9;
+  }
+}
+

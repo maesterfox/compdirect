@@ -29,9 +29,9 @@
 
 
 	$_POST['name'] = trim($_POST['name']);
-	$_POST['name'] = preg_replace('# {2,}#', ' ', $_POST['name']); 
-	$_POST['name'] = strtolower($_POST['name']);
-	$_POST['name'] = ucfirst($_POST['name']);
+$_POST['name'] = preg_replace('# {2,}#', ' ', $_POST['name']); 
+$_POST['name'] = ucwords(strtolower($_POST['name']));
+
 
 	$query = $conn->prepare('INSERT INTO department (name, locationID) VALUES(?,?)');
 
@@ -62,6 +62,4 @@
 	
 	mysqli_close($conn);
 
-	echo json_encode($output); 
-
-?>
+	echo json_encode($output);
