@@ -142,6 +142,13 @@ $(document).ready(function () {
     $("#editLocationConfirmToast").toast("hide");
   });
 
+  $;
+  // Listen for the 'shown' event on the department tab
+  $("#pills-home-tab").on("shown.bs.tab", function (e) {
+    // Call the function to populate the departments table
+    getAll();
+  });
+
   $(document).ready(function () {
     // Listen for the 'shown' event on the department tab
     $("#pills-profile-tab").on("shown.bs.tab", function (e) {
