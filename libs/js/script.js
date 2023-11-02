@@ -1,15 +1,3 @@
-// PRELOADER //
-
-$(window).on("load", function () {
-  if ($("#preloader").length) {
-    $("#preloader")
-      .delay(2000)
-      .fadeOut("slow", function () {
-        $(this).remove();
-      });
-  }
-});
-
 class AjaxHandler {
   constructor() {
     this.baseUrl = "libs/php/";
@@ -152,6 +140,14 @@ $(document).ready(function () {
     $(".modal-backdrop").remove(); // Remove backdrop
     $("#editLocationName").focus(); // Set focus
     $("#editLocationConfirmToast").toast("hide");
+  });
+
+  $(document).ready(function () {
+    // Listen for the 'shown' event on the department tab
+    $("#pills-profile-tab").on("shown.bs.tab", function (e) {
+      // Call the function to populate the departments table
+      populateDeptsTable();
+    });
   });
 
   $("#pills-contact-tab").on("shown.bs.tab", function (e) {
@@ -489,6 +485,7 @@ $("#addDepartment").submit(function (e) {
         }, 2000);
 
         populateDeptsTable(); // Reload the department table
+        getAllDepartments(); // Update all department dropdowns
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
     },
@@ -918,26 +915,26 @@ $("#confirmDelete").on("click", function () {
     "removeEmployee.php",
     { id: personIDtoBeDelete },
     function (response) {
-      // TODO: Check the response status more thoroughly for extra safety
+      // Check the response status more thoroughly for extra safety
       if (response.status && response.status.code === "200") {
         showSuccessToast(`${personName} has been removed.`);
-        setTimeout(() => {
-          $("#confirmEmployeeDelete").toast("hide");
-        }, 2000); // keep the toast open for 2 more seconds
-        // TODO: Add error handling here in case 'getAll()' fails
         getAll(); // Refresh the table data
       }
     },
     function () {
-      // TODO: Improve this error message to be more informative
+      // Improve this error message to be more informative
       showToast("Error deleting employee.");
     }
   );
+
+  // Manually hide the confirmation toast
+  $("#confirmEmployeeDelete").toast("hide");
 });
 
 // Cancel the deletion
 $("#cancelDelete").on("click", function () {
-  $("#confirmEmployeeDelete").toast("hide"); // Hide the toast
+  // Manually hide the confirmation toast
+  $("#confirmEmployeeDelete").toast("hide");
 });
 
 // TODO: Maybe add a function to reset the global variables after use
@@ -988,6 +985,7 @@ $("#confirmDeptDeleteButton").on("click", function () {
             if (response.status.code === "200") {
               showSuccessToast(`${departmentName} has been removed.`);
               populateDeptsTable(); // Reload the table
+              getAllDepartments(); // Update department dropdowns if necessary
             } else {
               // TODO: Improve this error message to be more informative
               showToast("Error deleting department.", "red");
@@ -1093,9 +1091,23 @@ $("#cancelLocationDelete").on("click", function () {
 
 // TODO: Consider adding a function to reset the global variables after use.
 
-// Function to show toast with color
-function showToast(message, color) {
+// Function to show toast with color and autohide after a specific delay
+function showToast(message, color, delay = 2000) {
+  // Add delay parameter with default value
   $("#myToast .toast-body").text(message);
   $("#myToast").removeClass("toast-red toast-green").addClass(`toast-${color}`);
-  $("#myToast").toast("show");
+  // Show toast with autohide and delay options
+  $("#myToast").toast({ autohide: true, delay: delay }).toast("show");
 }
+
+// PRELOADER //
+
+// $(window).on("load", function () {
+//   if ($("#preloader").length) {
+//     $("#preloader")
+//       .delay(2000)
+//       .fadeOut("slow", function () {
+//         $(this).remove();
+//       });
+//   }
+// });
