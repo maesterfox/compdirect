@@ -93,25 +93,42 @@ $(document).ready(function () {
     });
   });
 
-  // Focus on first input field when the modal is shown for Person
-  $("#insertNewEmployee").on("shown.bs.modal", function () {
-    $(".modal-backdrop").remove(); // Remove backdrop
-    $("#addFirstName").focus();
-    // console.log("Modal is shown");
-  });
+  $(document).ready(function () {
+    // Add New Button Click Handler
+    $("#addBtn").click(function () {
+      let activeTab = $(".nav-link.active").attr("id");
 
-  // Focus on first input field when the modal is shown for Department
-  $("#insertNewDepartment").on("shown.bs.modal", function () {
-    $(".modal-backdrop").remove(); // Remove backdrop
-    $("#deptName").focus();
-    // console.log("Modal is shown for Add Department");
-  });
+      // Check which tab is active and open the corresponding modal
+      if (activeTab === "pills-home-tab") {
+        // Show Add New Employee Modal
+        $("#insertNewEmployee").modal("show");
+      } else if (activeTab === "pills-profile-tab") {
+        // Show Add New Department Modal
+        $("#insertNewDepartment").modal("show");
+      } else if (activeTab === "pills-contact-tab") {
+        // Show Add New Location Modal
+        $("#insertNewLocation").modal("show");
+      }
+    });
 
-  // Focus on first input field when the modal is shown for Location
-  $("#insertNewLocation").on("shown.bs.modal", function () {
-    $(".modal-backdrop").remove(); // Remove backdrop
-    $("#newLocName").focus();
-    //console.log("Modal is shown for Add Location");
+    // Focus on first input field when the modal is shown for Person
+    $("#insertNewEmployee").on("shown.bs.modal", function () {
+      $(".modal-backdrop").remove(); // Remove backdrop
+      $("#addFirstName").focus();
+    });
+
+    // Focus on first input field when the modal is shown for Department
+    $("#insertNewDepartment").on("shown.bs.modal", function () {
+      $(".modal-backdrop").remove(); // Remove backdrop
+      $("#deptName").focus();
+      populateLocationDropdownForAddDept(); // Populate the location dropdown
+    });
+
+    // Focus on first input field when the modal is shown for Location
+    $("#insertNewLocation").on("shown.bs.modal", function () {
+      $(".modal-backdrop").remove(); // Remove backdrop
+      $("#newLocName").focus();
+    });
   });
 
   // Populate edit employee form
@@ -134,7 +151,6 @@ $(document).ready(function () {
     $("#editLocationConfirmToast").toast("hide");
   });
 
-  $;
   // Listen for the 'shown' event on the department tab
   $("#pills-home-tab").on("shown.bs.tab", function (e) {
     // Call the function to populate the departments table
@@ -159,8 +175,8 @@ $(document).ready(function () {
 $(document).ready(function () {
   // Unified search for all tables
   $("#universalSearch").on("keyup", function () {
-    var value = $(this).val().toLowerCase();
-    var activeTab = $(".nav-link.active").attr("id");
+    let value = $(this).val().toLowerCase();
+    let activeTab = $(".nav-link.active").attr("id");
 
     if (activeTab === "pills-home-tab") {
       $("#employeeTable tr").filter(function () {
@@ -176,104 +192,295 @@ $(document).ready(function () {
       });
     }
   });
+});
 
-  // When filter button is clicked, populate dropdowns and show modal
+$(document).ready(function () {
+  // Toggle filter button visibility based on the active tab
+  function toggleFilterButtonVisibility() {
+    let activeTab = $(".nav-link.active").attr("id");
+
+    if (activeTab === "pills-contact-tab") {
+      $("#filterBtn").addClass("d-none");
+      $("#locationsFilterBtn").removeClass("d-none");
+    } else {
+      $("#filterBtn").removeClass("d-none");
+      $("#locationsFilterBtn").addClass("d-none");
+    }
+  }
+
+  // Call the function initially and on tab change
+  toggleFilterButtonVisibility();
+  $(".nav-link").on("click", toggleFilterButtonVisibility);
+
+  // Regular Filter Button Click Handler
   $("#filterBtn").click(function () {
     populateFilterDropdowns();
     $("#filterModal").modal("show");
   });
 
-  // Apply filter logic
-  $("#applyFilter").click(function () {
-    let selectedDept = $("#departmentFilter").val();
-    let selectedLoc = $("#locationFilter").val();
-    getAll(selectedDept, selectedLoc); // Assumes getAll() is defined elsewhere
-    $("#filterModal").modal("hide");
+  // Locations Filter Button Click Handler
+  $("#locationsFilterBtn").click(function () {
+    populateLocationsFilterDropdown();
+    $("#locationsFilterModal").modal("show");
   });
 
-  // Remove backdrop when the modal is shown
-  $("#filterModal").on("shown.bs.modal", function () {
-    $(".modal-backdrop").remove(); // Remove backdrop
-    $("#departmentFilter").focus(); // Optionally set focus to the first dropdown
+  // Apply Filter Logic for Locations Modal
+  $("#applyLocationsFilter").click(function () {
+    let selectedLoc = $("#locationsFilterSelect").val();
+    fetchAllLocations(selectedLoc); // Modify to use the selected location
+    $("#locationsFilterModal").modal("hide");
   });
 
-  // Change event for department filter
-  $("#departmentFilter").change(function () {
+  // Remove backdrop when any modal is shown
+  $(".modal").on("shown.bs.modal", function () {
+    $(".modal-backdrop").remove();
+    $(this).find("select").first().focus();
+  });
+
+  // Change event for department filter (only applicable for the regular filter modal)
+  $("#departmentFilter").on("change", function () {
     let selectedDept = $(this).val();
-    if (selectedDept !== "getAll") {
+    if (selectedDept !== "all") {
       filterLocationsByDepartment(selectedDept);
-    }
-  });
-
-  // Change event for location filter
-  $("#locationFilter").change(function () {
-    let selectedLoc = $(this).val();
-    if (selectedLoc !== "getAll") {
-      filterDepartmentsByLocation(selectedLoc);
+    } else {
+      populateFilterDropdowns();
     }
   });
 });
 
+// Apply filter logic for locations tab using the new modal
+$("#applyLocationsFilter").click(function () {
+  let selectedLoc = $("#locationsFilterSelect").val(); // Adjust this ID based on your new modal's dropdown
+  filterLocationsTable(selectedLoc); // Call the specific function to filter locations table
+  $("#locationsFilterModal").modal("hide");
+});
+
+function filterLocationsTable(selectedLoc) {
+  console.log(selectedLoc);
+  // Check if a specific location is selected
+  if (selectedLoc !== "all") {
+    // Filter the location table based on the selected location
+    $("#locationTable tr").filter(function () {
+      $(this).toggle(
+        $(this).text().toLowerCase().indexOf(selectedLoc.toLowerCase()) > -1
+      );
+    });
+  } else {
+    // If 'all' is selected, show all rows
+    $("#locationTable tr").show();
+  }
+}
+
+function filterLocationsByDepartment(deptId) {
+  // Make an AJAX call to a PHP script that returns locations based on the department
+  ajaxHandler.get(
+    "getLocationsByDepartment.php", // This PHP script needs to exist on the server
+    { deptId: deptId },
+    function (response) {
+      if (response.data && Array.isArray(response.data)) {
+        let locOptions = '<option value="all">All Locations</option>';
+        response.data.forEach((loc) => {
+          locOptions += `<option value="${loc.id}">${loc.name}</option>`;
+        });
+        $("#locationFilter").html(locOptions);
+      }
+    },
+    function (error) {
+      console.error("Error:", error);
+    }
+  );
+}
+
+function filterDepartmentsByLocation(locId) {
+  // Make an AJAX call to a PHP script that returns departments based on the location
+  ajaxHandler.get(
+    "getDepartmentsByLocation.php", // This PHP script needs to exist on the server
+    { locId: locId },
+    function (response) {
+      if (response.data && Array.isArray(response.data)) {
+        let deptOptions = '<option value="all">All Departments</option>';
+        response.data.forEach((dept) => {
+          deptOptions += `<option value="${dept.id}">${dept.name}</option>`;
+        });
+        $("#departmentFilter").html(deptOptions);
+      }
+    },
+    function (error) {
+      console.error("Error:", error);
+    }
+  );
+}
+
 // Function to populate filter dropdowns
 function populateFilterDropdowns() {
-  // Fetch and populate department dropdown
-  ajaxHandler.get("getAllDepartments.php", function (response) {
-    let deptOptions = '<option value="getAll">All Departments</option>';
-    response.data.forEach((dept) => {
-      deptOptions += `<option value="${dept.id}">${dept.name}</option>`;
-    });
-    $("#departmentFilter").html(deptOptions);
-  });
+  // Fetch and populate department dropdown using AjaxHandler
+  ajaxHandler.get(
+    "getAllDepartments.php",
+    function (response) {
+      let deptOptions =
+        '<select class="form-select filterDepartmentSelect" id="filterDepartmentSelect" placeholder="Department" name="department"><option value="all" selected>All</option>';
+      if (Array.isArray(response.data)) {
+        response.data.forEach(function (value) {
+          deptOptions += `<option value="${value.id}">${value.name}</option>`;
+        });
+      }
+      deptOptions += "</select>";
+      $("#departmentFilter").html(deptOptions);
+    },
+    function (error) {
+      console.error("Error fetching departments:", error);
+    }
+  );
 
-  // Fetch and populate location dropdown
-  ajaxHandler.get("fetchAllLocations.php", function (response) {
-    let locOptions = '<option value="getAll">All Locations</option>';
-    response.data.forEach((loc) => {
-      locOptions += `<option value="${loc.id}">${loc.name}</option>`;
-    });
-    $("#locationFilter").html(locOptions);
-  });
+  // Fetch and populate location dropdown using AjaxHandler
+  ajaxHandler.get(
+    "fetchAllLocations.php",
+    function (response) {
+      let locOptions =
+        '<select class="form-select filterLocationSelect" id="filterLocationSelect" placeholder="Location" name="location"><option value="all" selected>All</option>';
+      if (Array.isArray(response.data)) {
+        response.data.forEach(function (value) {
+          locOptions += `<option value="${value.id}">${value.name}</option>`;
+        });
+      }
+      locOptions += "</select>";
+      $("#locationFilter").html(locOptions);
+    },
+    function (error) {
+      console.error("Error fetching locations:", error);
+    }
+  );
+}
+
+// Department change event
+$("#departmentFilter").on("change", ".filterDepartmentSelect", function () {
+  if ($(this).val() !== "all") {
+    $("#locationFilter").html(
+      '<select class="form-select filterLocationSelect" id="filterLocationSelect"><option value="all" selected>All</option></select>'
+    );
+  } else {
+    populateFilterDropdowns(); // Repopulate both filters
+  }
+});
+
+// Location change event
+$("#locationFilter").on("change", ".filterLocationSelect", function () {
+  if ($(this).val() !== "all") {
+    $("#departmentFilter").html(
+      '<select class="form-select filterDepartmentSelect" id="filterDepartmentSelect"><option value="all" selected>All</option></select>'
+    );
+  } else {
+    populateFilterDropdowns(); // Repopulate both filters
+  }
+});
+
+function populateLocationsFilterDropdown() {
+  // Fetch all locations and populate the dropdown for the locations filter modal
+  ajaxHandler.get(
+    "fetchAllLocations.php",
+    function (response) {
+      if (response.data && Array.isArray(response.data)) {
+        let options = response.data
+          .map((loc) => `<option value="${loc.id}">${loc.name}</option>`)
+          .join("");
+        $("#locationsFilterSelect").html(options);
+      } else {
+        console.error("Expected an array for locations, got:", response);
+      }
+    },
+    function (error) {
+      console.error("Error fetching locations:", error);
+    }
+  );
 }
 
 // Function to filter locations based on selected department
-function filterLocationsByDepartment(deptId) {
+function populateFilterDropdowns() {
+  // Fetch and populate department dropdown
   ajaxHandler.get(
-    "getLocationsByDepartment.php",
-    { deptId: deptId },
+    "getAllDepartments.php",
     function (response) {
-      let locOptions = '<option value="getAll">All Locations</option>';
-      response.data.forEach((loc) => {
-        locOptions += `<option value="${loc.id}">${loc.name}</option>`;
-      });
+      let deptOptions =
+        '<select class="form-select filterDepartmentSelect" id="filterDepartmentSelect" name="department"><option value="all" selected>All</option>';
+
+      if (Array.isArray(response.data)) {
+        response.data.forEach(function (value) {
+          deptOptions += `<option value="${value.id}">${value.name}</option>`;
+        });
+      } else {
+        // Handle the case where response.data is not an array
+        console.error("Expected an array for departments, got:", response);
+      }
+
+      deptOptions += "</select>";
+      $("#departmentFilter").html(deptOptions);
+    },
+    function (error) {
+      console.error("Error fetching departments:", error);
+    }
+  );
+
+  // Fetch and populate location dropdown
+  ajaxHandler.get(
+    "fetchAllLocations.php",
+    function (response) {
+      let locOptions =
+        '<select class="form-select filterLocationSelect" id="filterLocationSelect" name="location"><option value="all" selected>All</option>';
+
+      if (Array.isArray(response.data)) {
+        response.data.forEach(function (value) {
+          locOptions += `<option value="${value.id}">${value.name}</option>`;
+        });
+      } else {
+        // Handle the case where response.data is not an array
+        console.error("Expected an array for locations, got:", response);
+      }
+
+      locOptions += "</select>";
       $("#locationFilter").html(locOptions);
+    },
+    function (error) {
+      console.error("Error fetching locations:", error);
     }
   );
 }
 
-// Function to filter departments based on selected location
-function filterDepartmentsByLocation(locId) {
-  ajaxHandler.get(
-    "getDepartmentsByLocation.php",
-    { locId: locId },
-    function (response) {
-      let deptOptions = '<option value="getAll">All Departments</option>';
-      response.data.forEach((dept) => {
-        deptOptions += `<option value="${dept.id}">${dept.name}</option>`;
-      });
-      $("#departmentFilter").html(deptOptions);
-    }
-  );
-}
+$("#applyFilter").click(function () {
+  let selectedDept = $("#departmentFilter").val();
+  let selectedLoc = $("#locationFilter").val();
+  let activeTab = $(".nav-link.active").attr("id");
+
+  // Check which tab is active and apply filter accordingly
+  if (activeTab === "pills-home-tab") {
+    // Employee Table
+    getAll(selectedDept, selectedLoc);
+  } else if (activeTab === "pills-profile-tab") {
+    // Departments Table
+    // Call populateDeptsTable with parameters if necessary
+    populateDeptsTable(selectedDept, selectedLoc); // Modify populateDeptsTable to accept and use these parameters
+  } else if (activeTab === "pills-contact-tab") {
+    // Locations Table
+    // Call fetchAllLocations with parameters if necessary
+    fetchAllLocations(selectedLoc); // Modify fetchAllLocations to accept and use this parameter
+  }
+
+  $("#filterModal").modal("hide");
+});
+
+$("#clearFilter").on("click", function (e) {
+  e.preventDefault();
+  populateFilterDropdowns(); // Repopulate both filters
+  // Additional logic to reset the actual filtered content can be added here
+});
 
 // Tables //
 
 // Full employee Table
 function getAll(deptId = null, locId = null) {
   let queryParams = {};
-  if (deptId && deptId !== "getAll") queryParams.departmentId = deptId;
-  if (locId && locId !== "getAll") queryParams.locationId = locId;
+  if (deptId && deptId !== "all") queryParams.departmentId = deptId;
+  if (locId && locId !== "all") queryParams.locationId = locId;
 
-  // Construct URL with query parameters
   let queryStr = $.param(queryParams);
   let url = `getAll.php?${queryStr}`;
 
@@ -343,63 +550,69 @@ function groupEmployeesByDepartment(employees) {
   return departmentCounts;
 }
 
-function populateDeptsTable() {
+// Update the populateDeptsTable function to include filtering logic
+function populateDeptsTable(deptId = null, locId = null) {
+  console.log(
+    "populateDeptsTable called with deptId:",
+    deptId,
+    "locId:",
+    locId
+  );
+
   // First fetch all employees
   ajaxHandler.get(
     "getAll.php",
     function (employeeResponse) {
-      // Group employees by department
       const departmentCounts = groupEmployeesByDepartment(
         employeeResponse.data
       );
 
-      // Then fetch all departments
+      // Then fetch all departments with possible filters
+      let queryParams = {};
+      if (deptId && deptId !== "all") queryParams.departmentId = deptId;
+      if (locId && locId !== "all") queryParams.locationId = locId;
+
+      let queryStr = $.param(queryParams);
+      let filterUrl = `getAllDepartments.php?${queryStr}`;
+
       ajaxHandler.get(
-        "getAllDepartments.php",
+        filterUrl,
         function (deptResponse) {
-          const rows = [];
-          if (deptResponse.data && Array.isArray(deptResponse.data)) {
-            const sortedData = deptResponse.data.sort((a, b) =>
-              a.name.localeCompare(b.name)
-            );
+          const rows = deptResponse.data.map((department) => {
+            const employeeCount = departmentCounts[department.id] || 0;
+            return `
+          <tr>
+            <td class="tableHide d-none">${department.id}</td>
+            <td>${department.name}</td>
+            <td>${department.location}</td>
+            <td>${employeeCount}</td>
+            <td>
+              <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+          });
 
-            sortedData.forEach((department) => {
-              const employeeCount = departmentCounts[department.id] || "0";
-              rows.push(`
-                <tr>
-                  <td class="tableHide d-none">${department.id}</td>
-                  <td>${department.name}</td>
-                  <td>${department.location}</td>
-                  <td>${employeeCount}</td> <!-- New column for employee count -->
-                  <td>
-                    <button class="btn btn-primary editDeptBtn" data-bs-toggle="modal" data-bs-target="#editDept2" data-id="${department.id}" title="Edit">
-                      <i class="fa-solid fa-pen-to-square"></i>
-                    </button>
-                    <button class="btn btn-danger deleteDeptBtn" data-id="${department.id}" title="Delete">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              `);
-            });
-          }
-
-          // Update the table body only once
           $("#departmentTable").html(rows.join(""));
         },
         function (error) {
+          console.error("Error fetching filtered departments:", error);
           $("#departmentTable").html(
-            `<tr><td colspan='5'>Error fetching departments: ${error}</td></tr>`
+            `<tr><td colspan='5'>Error: ${error}</td></tr>`
           );
-          console.log("Error:", error);
         }
       );
     },
     function (error) {
+      console.error("Error fetching employees for counts:", error);
       $("#departmentTable").html(
-        `<tr><td colspan='5'>Error fetching employees: ${error}</td></tr>`
+        `<tr><td colspan='5'>Error: ${error}</td></tr>`
       );
-      console.log("Error:", error);
     }
   );
 }
@@ -413,7 +626,6 @@ function getAllDepartments() {
       const options = [
         `<option value="getAll" selected>All Departments</option>`,
       ];
-      // TODO: Consider adding a loading state while fetching data
 
       // Check if response data exists and is an array
       if (response.data && Array.isArray(response.data)) {
@@ -441,30 +653,31 @@ function getAllDepartments() {
 }
 
 // Function to fetch all Locations
-function fetchAllLocations() {
-  // Perform AJAX GET request to fetchAllLocations.php
+function fetchAllLocations(selectedLoc = null) {
+  let queryParams = {};
+  if (selectedLoc && selectedLoc !== "all") {
+    queryParams.locationId = selectedLoc;
+  }
+
+  let queryStr = $.param(queryParams);
+  let url = `fetchAllLocations.php?${queryStr}`;
+
+  console.log("Fetching locations with URL:", url); // Debugging log
+
   ajaxHandler.get(
-    "fetchAllLocations.php",
+    url,
     function (response) {
-      // Initialize options for location dropdown and rows for location table
-      let options = [`<option value="getAll" selected>All Locations</option>`];
+      console.log("Response data:", response.data); // Debugging log
+
       let rows = [];
-      // TODO: Consider adding a loading state while fetching data
-
-      // Check if response data exists and is an array
       if (response.data && Array.isArray(response.data)) {
-        // Populate options and rows based on received data
         response.data.forEach((loc) => {
-          options.push(`<option value="${loc.id}">${loc.name}</option>`);
-
-          // Generate table rows
           rows.push(`
             <tr>
-              <!-- TODO: Consider if hiding the ID is the best approach -->
               <td class="d-none">${loc.id}</td>
               <td>${loc.name}</td>
-              <td>${loc.departmentCount}</td> <!-- New column -->
-              <td>${loc.employeeCount}</td> <!-- New column -->
+              <td>${loc.departmentCount}</td>
+              <td>${loc.employeeCount}</td>
               <td>
                 <div class="d-flex">
                   <button type="button" class="btn btn-primary updateLocBtn mx-auto" data-bs-toggle="modal" data-bs-target="#editLocation" data-id="${loc.id}" title="Edit">
@@ -478,29 +691,26 @@ function fetchAllLocations() {
             </tr>
           `);
         });
-        // TODO: Consider making buttons into reusable components
 
-        // Update dropdown and table body only once to minimize DOM updates
-        $(".locations").html(options.join(""));
         $("#locationTable").html(rows.join(""));
-
-        // TODO: Evaluate the necessity of these attribute changes
-        $('#insertNewEmployee select option[value="getAll"]').attr("value", "");
-        $('#insertNewDepartment select option[value="getAll"]').attr(
-          "value",
-          ""
-        );
-        $('#insertNewLocation select option[value="getAll"]').attr("value", "");
+      } else {
+        $("#locationTable").html(`<tr><td colspan='5'>No data found</td></tr>`);
       }
     },
     function (error) {
-      $("#locationTable").html(
-        `<tr><td colspan='5'>Error fetching locations: ${error}</td></tr>`
-      );
-      console.log("Error getting data:", error);
+      $("#locationTable").html(`<tr><td colspan='5'>Error: ${error}</td></tr>`);
+      console.error("Error fetching locations:", error);
     }
   );
 }
+
+// Bind this function to the location filter button click event
+$("#applyLocationsFilter").click(function () {
+  let selectedLoc = $("#locationsFilterSelect").val();
+  console.log("Selected Location ID:", selectedLoc); // Debugging log
+  fetchAllLocations(selectedLoc);
+  $("#locationsFilterModal").modal("hide");
+});
 
 // Add Employees, Depts, Locations //
 
@@ -549,6 +759,41 @@ $("#addEmployee").submit(function (e) {
       );
     }
   );
+});
+
+// Function to populate location dropdown in Add Department modal
+function populateLocationDropdownForAddDept() {
+  ajaxHandler.get(
+    "fetchAllLocations.php",
+    function (response) {
+      if (response && Array.isArray(response.data)) {
+        let locOptions =
+          '<option value="" disabled selected>Select Location</option>'; // Default option
+        response.data.forEach(function (value) {
+          locOptions += `<option value="${value.id}">${value.name}</option>`;
+        });
+
+        // Debugging: Log the options string
+        console.log("Dropdown HTML:", locOptions);
+
+        // Update the dropdown
+        $("#locName").html(locOptions); // Update the dropdown
+      } else {
+        console.error("Unexpected response format or no data", response);
+      }
+    },
+    function (error) {
+      console.error(
+        "Error fetching locations for add department modal:",
+        error
+      );
+    }
+  );
+}
+
+// Attach the function call to the modal's show event
+$("#insertNewDepartment").on("show.bs.modal", function () {
+  populateLocationDropdownForAddDept();
 });
 
 // Handle form submission for adding a department
@@ -768,39 +1013,60 @@ function populateEditDeptModal(departmentId) {
     return;
   }
 
-  ajaxHandler.post(
-    "getDepartmentByID.php",
-    { id: departmentId },
-    function (result) {
-      // Validate result object and its properties
-      if (result && result.status && result.status.code && result.data) {
-        if (result.status.code.toString() === "200") {
-          $("#deptId").val(result.data[0].id);
-          $("#editDeptName").val(result.data[0].name);
-          $("#editDeptLocation").val(result.data[0].locationID);
+  // Populate the location dropdown first
+  populateLocationDropdown(function () {
+    // Fetch department data by ID
+    ajaxHandler.post(
+      "getDepartmentByID.php",
+      { id: departmentId },
+      function (result) {
+        // Validate result object and its properties
+        if (result && result.status && result.status.code && result.data) {
+          if (result.status.code.toString() === "200") {
+            $("#deptId").val(result.data[0].id);
+            $("#editDeptName").val(result.data[0].name);
+            $("#editDeptLocation").val(result.data[0].locationID); // Set the department's current location
+          } else {
+            console.error(
+              "Error getting department data. resultCode is not 200."
+            );
+            $("#editDeptResponse").html(
+              "<div class='alert alert-danger'>Failed to fetch department data.</div>"
+            );
+          }
         } else {
-          console.error(
-            "Error getting department data. resultCode is not 200."
-          );
-          // Optionally, display an error message on the modal
+          console.error("Invalid response structure.");
           $("#editDeptResponse").html(
-            "<div class='alert alert-danger'>Failed to fetch department data.</div>"
+            "<div class='alert alert-danger'>Invalid response structure.</div>"
           );
         }
-      } else {
-        console.error("Invalid response structure.");
-        // Optionally, display an error message on the modal
+      },
+      function (error) {
+        console.error("Error fetching department data:", error);
         $("#editDeptResponse").html(
-          "<div class='alert alert-danger'>Invalid response structure.</div>"
+          `<div class='alert alert-danger'>Error fetching department data: ${error}</div>`
         );
       }
+    );
+  });
+}
+
+// Function to populate location dropdown
+function populateLocationDropdown(callback) {
+  ajaxHandler.get(
+    "fetchAllLocations.php",
+    function (response) {
+      let locOptions = '<option value="" disabled>Select Location</option>';
+      if (Array.isArray(response.data)) {
+        response.data.forEach(function (value) {
+          locOptions += `<option value="${value.id}">${value.name}</option>`;
+        });
+      }
+      $("#editDeptLocation").html(locOptions); // Update the dropdown in Edit modal
+      if (callback) callback(); // Execute callback if provided
     },
     function (error) {
-      console.error("Error fetching department data:", error);
-      // Optionally, display an error message on the modal
-      $("#editDeptResponse").html(
-        `<div class='alert alert-danger'>Error fetching department data: ${error}</div>`
-      );
+      console.error("Error fetching locations:", error);
     }
   );
 }
@@ -877,6 +1143,29 @@ $("#editDept2").on("show.bs.modal", function (e) {
 
   const departmentId = $(e.relatedTarget).attr("data-id");
   populateEditDeptModal(departmentId);
+});
+
+// Fetch data and populate the modal before it is shown
+$("#editLocation").on("show.bs.modal", function (e) {
+  $("#editLocResponse").empty(); // Clear any existing messages
+
+  const idToBeFetched = $(e.relatedTarget).attr("data-id");
+
+  ajaxHandler.post(
+    "fetchLocID.php",
+    { id: idToBeFetched },
+    function (result) {
+      if (result.status.code.toString() === "200") {
+        $("#editLocationSelect").val(result.data[0].id);
+        $("#editLocationName").val(result.data[0].name);
+      } else {
+        console.log("Error getting data. resultCode is not 200.");
+      }
+    },
+    function () {
+      console.log("Error getting data.");
+    }
+  );
 });
 
 // Fetch data and populate the modal before it is shown

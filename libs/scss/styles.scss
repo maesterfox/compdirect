@@ -322,7 +322,7 @@ th:last-child, td:last-child {
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.9;
-  z-index: 1050; // To make sure it appears above modals
+  z-index: 9999; // To make sure it appears above modals
 }
 
 /* Custom Red Toast */

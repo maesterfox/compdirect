@@ -49,9 +49,7 @@
 </div> -->
 <section>
   
-<!-- <h1 id="company-directory-heading">Company Directory</h1> -->
 
-<!-- <div class="container" id="main"> -->
 
   <!-- Top Section with Search and Action Buttons -->
 <div class="row mb-3">
@@ -65,9 +63,16 @@
           <i class="fas fa-sync-alt"></i>
       </button>
       <!-- Filter Button to trigger Modal -->
-      <button id="filterBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal" aria-label="Filter">
-          <i class="fas fa-filter"></i>
-      </button>
+      <!-- Existing Filter Button -->
+<button id="filterBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal" aria-label="Filter">
+  <i class="fas fa-filter"></i>
+</button>
+
+<!-- New Filter Button for Locations -->
+<button id="locationsFilterBtn" type="button" class="btn btn-primary d-none" aria-label="Filter Locations">
+  <i class="fas fa-filter"></i>
+</button>
+
       <button id="addBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" aria-label="Add New">
           <i class="fas fa-plus"></i>
       </button>
@@ -154,6 +159,29 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="applyFilter">Apply Filter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Locations Filter Modal -->
+<div class="modal" id="locationsFilterModal" tabindex="-1" aria-labelledby="locationsFilterModalLabel" aria-hidden="true" data-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title text-white w-100 text-center" id="locationsFilterModalLabel">Filter Locations</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Only one select for location -->
+        <h6>Location</h6>
+        <select class="form-select" id="locationsFilterSelect">
+          <!-- Location options will be populated here -->
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="applyLocationsFilter">Apply Filter</button>
       </div>
     </div>
   </div>
