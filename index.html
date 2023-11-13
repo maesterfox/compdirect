@@ -47,41 +47,126 @@
 <!-- <div id="preloader">
   <div class="spinner"></div>
 </div> -->
-
+<section>
   
-    <h1 id="company-directory-heading">Company Directory</h1>
-  
-  <div class="container" id="main">
+<!-- <h1 id="company-directory-heading">Company Directory</h1> -->
 
- 
+<!-- <div class="container" id="main"> -->
 
-    <!--Nav Section-->
-    
+  <!-- Top Section with Search and Action Buttons -->
+<div class="row mb-3">
+  <div class="col-md-6">
+      <!-- Unified Search Input -->
+      <input type="text" class="form-control" id="universalSearch" placeholder="Search...">
+  </div>
+  <div class="col-md-6 text-end">
+      <!-- Action Buttons -->
+      <button id="refreshBtn" type="button" class="btn btn-primary" aria-label="Refresh">
+          <i class="fas fa-sync-alt"></i>
+      </button>
+      <!-- Filter Button to trigger Modal -->
+      <button id="filterBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal" aria-label="Filter">
+          <i class="fas fa-filter"></i>
+      </button>
+      <button id="addBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" aria-label="Add New">
+          <i class="fas fa-plus"></i>
+      </button>
+  </div>
+</div>
+
+<!-- Navigation Tabs -->
 <ul class="nav nav-pills nav-tabs mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
-      type="button" role="tab" aria-controls="pills-home" aria-selected="true" title="employee">
-      <i class="fas fa-users"></i>
-    </button>
+      <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">
+          <i class="fas fa-user"></i>
+      </button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile"
-      type="button" role="tab" aria-controls="pills-profile" aria-selected="false" title="Departments">
-      <i class="fas fa-building"></i>
-    </button>
+      <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">
+          <i class="fas fa-building"></i>
+      </button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact"
-      type="button" role="tab" aria-controls="pills-contact" aria-selected="false" title="Locations">
-      <i class="fas fa-map-marker-alt"></i>
-    </button>
+      <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">
+          <i class="fas fa-map-marker-alt"></i>
+      </button>
   </li>
 </ul>
 
-    <div class="tab-content" id="pills-tabContent">
+<!-- Tab Content -->
+<div class="tab-content" id="pills-tabContent">
+  <!-- Employee Table -->
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+          <!-- Employee Data Table -->
+          <table class="table table-bordered">
+              <thead class="text-center"></thead>
+              <tbody id="employeeTable">
+                  <!-- Table content will be populated here -->
+              </tbody>
+          </table>
+      </div>
+  </div>
 
-      <!-- Add Employee Modal -->
-<div class="modal" id="insertNewEmployee" tabindex="-1" aria-labelledby="insertNewEmployeeLabel" aria-hidden="true">
+  <!-- Departments Table -->
+  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+      <div class="table-wrapper-scroll-y my-custom-scrollbar">
+          <table class="table table-bordered">
+              <thead></thead>
+              <tbody id="departmentTable">
+                  <!-- Table content will be populated here -->
+              </tbody>
+          </table>
+      </div>
+  </div>
+
+  <!-- Locations Table -->
+  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+      <div class="table-wrapper">
+          <table class="table table-bordered">
+              <thead></thead>
+              <tbody id="locationTable">
+                  <!-- Table content will be populated here -->
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+
+<!-- Filter Modal -->
+<div class="modal" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true" data-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title text-white w-100 text-center" id="filterModalLabel">Filter Options</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h6>Department</h6>
+        <select class="form-select mb-3" id="departmentFilter">
+          <!-- Department options will be populated here -->
+        </select>
+        <h6>Location</h6>
+        <select class="form-select" id="locationFilter">
+          <!-- Location options will be populated here -->
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="applyFilter">Apply Filter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- Employees -->
+
+ <!-- Add Employee Modal -->
+ <div class="modal" id="insertNewEmployee" tabindex="-1" aria-labelledby="insertNewEmployeeLabel" aria-hidden="true">
   <!-- TODO: Consider making the modal draggable for better UX -->
 
   <!-- Modal Dialog -->
@@ -154,139 +239,6 @@
     </div>
   </div>
 </div>
-
-
-      <!-- Employee Table -->
-<!-- TODO: Consider adding a loading spinner for when the data is being fetched -->
-<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
-  
-  <!-- Filter Employees by Department Search -->
-  <!-- TODO: Make this search case-insensitive for better UX -->
-  <div class="input-group mb-3" id="searchFilterDiv">
-    
-    <!-- Department Dropdown -->
-    <!-- TODO: Populate this dropdown dynamically from the database -->
-    <select class="form-select deptDropdown searchFilter departments" aria-label="Default select example" id="employeeDeptFilter">
-      <!-- Options will be populated here -->
-    </select>
-    
-    <!-- Search Bar -->
-    <!-- TODO: Implement debounce for better performance -->
-    <input type="text" class="form-control searchFilter" id="employeeSearch" aria-label="Text input with dropdown button" placeholder="Search employee..">
-    
-    <!-- Add Employee Button -->
-    <!-- TODO: Add tooltip explaining what this button does -->
-    <button id="addEmployeenel" type="button" title="addButton" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insertNewEmployee">
-      <i class="fa-solid fa-user-plus fa-xl"></i>
-    </button>
-  </div>
-  
-  <!-- Scrollable Table Wrapper -->
-  <!-- TODO: Add 'No Data Available' message when the table is empty -->
-  <div class="table-wrapper-scroll-y my-custom-scrollbar">
-    
-    <!-- Employee Data Table -->
-    <table class="table table-bordered">
-      <thead class="text-center">
-        <tr>
-          <!-- Table Headings -->
-          <!-- TODO: Make these headers clickable for sorting -->
-          <th id="tableHead" scope="col">Name</th>
-          <th id="tableHead" scope="col">Department</th>
-          <th id="tableHead" class="tableHide" scope="col">Location</th>
-          <th id="tableHead" class="tableHide" scope="col">Email</th>
-          <th id="tableHead" scope="col">Edit/Delete</th>
-        </tr>
-      </thead>
-      <tbody id="employeeTable">
-        <!-- Table content will be populated here -->
-        <!-- TODO: Use a templating engine to populate the table -->
-      </tbody>
-    </table>
-  </div>
-</div>
-
-
-
-      <!--Departments Table-->
-
-      <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
-
-        <!-- Search Depts -->
-        <div class="input-group mb-3">
-
-
-
-          <input type="text" class="form-control" id="departmentSearch" aria-label="Text input with dropdown button"
-            placeholder="Search Department..">
-
-            <button id="addDep" type="button" title="addDepartment" class="btn btn-primary" data-bs-toggle="modal"
-            data-bs-target="#insertNewDepartment">
-            <i class="fa-solid fa-folder-plus fa-2xl"></i>
-          </button>
-
-        </div>
-
-        <div class="table-wrapper-scroll-y my-custom-scrollbar">
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th id="tableHead" class="tableHide d-none" scope="col">ID</th>
-                <th id="tableHead" scope="col">Department</th>
-                <th id="tableHead" cope="col">Location</th>
-                <th id="tableHead" scope="col">Employees</th> 
-                <th id="tableHead" scope="col">Edit/Delete</th>
-              </tr>
-            </thead>
-            <tbody id="departmentTable">
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!--Locations Table-->
-
-      <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
-
-        <!-- Search -->
-
-        <div class="input-group mb-3">
-
-          <input type="text" class="form-control" id="locationSearch" aria-label="Text input with dropdown button"
-            placeholder="Search Location..">
-
-            <button id="addLoc" type="button" class="btn btn-primary" data-bs-toggle="modal"
-            data-bs-target="#insertNewLocation">
-            <i class="fa-solid fa-location-dot fa-xl"></i><b> +</b>
-          </button>
-
-            
-
-        </div>
-
-        <div class="table-wrapper">
-          <table class="table table-bordered ">
-            <thead>
-              <tr>
-                <th id="tableHead" scope="col" class="d-none">ID</th>
-                <th id="tableHead" scope="col">Location</th>
-                <th id="tableHead" scope="col">Departments</th>
-                <th id="tableHead" scope="col">Employees</th>
-                <th id="tableHead" scope="col">Edit/Delete</th>
-              </tr>
-            </thead>
-            <tbody id="locationTable">
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!------ Modals ------>
-
-<!-- Employees -->
 
 <!-- Edit Employee Modal -->
 <!-- TODO: Consider making the modal draggable for better UX -->
@@ -637,6 +589,8 @@
 </div>
 
 
+
+
   <!-- Footer section -->
   
   <footer id="company-directory-footer">
@@ -648,7 +602,7 @@
       <a href="https://davidfoxfoxdev.co.uk" target="_blank" rel="noopener" title="My Portfolio Website"><i class="fas fa-globe"></i></a>
     </div>
   </footer>
-  
+</section>
       
   <script src="./node_modules/jquery/dist/jquery.min.js"></script>
   <script src="./node_modules/@popperjs/core/dist/umd/popper.min.js"></script>

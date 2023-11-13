@@ -77,14 +77,6 @@ $(document).ready(function () {
     });
   });
 
-  // Department Filter
-  $("#employeeDeptFilter").on("change", function () {
-    var value = $("#employeeDeptFilter option:selected").text().toLowerCase();
-    $("#employeeTable tr").filter(function () {
-      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-    });
-  });
-
   // Department Table Search
   $("#departmentSearch").on("keyup", function () {
     var value = $(this).val().toLowerCase();
@@ -163,13 +155,130 @@ $(document).ready(function () {
   });
 });
 
+// Document Ready Event Handlers
+$(document).ready(function () {
+  // Unified search for all tables
+  $("#universalSearch").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    var activeTab = $(".nav-link.active").attr("id");
+
+    if (activeTab === "pills-home-tab") {
+      $("#employeeTable tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    } else if (activeTab === "pills-profile-tab") {
+      $("#departmentTable tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    } else if (activeTab === "pills-contact-tab") {
+      $("#locationTable tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    }
+  });
+
+  // When filter button is clicked, populate dropdowns and show modal
+  $("#filterBtn").click(function () {
+    populateFilterDropdowns();
+    $("#filterModal").modal("show");
+  });
+
+  // Apply filter logic
+  $("#applyFilter").click(function () {
+    let selectedDept = $("#departmentFilter").val();
+    let selectedLoc = $("#locationFilter").val();
+    getAll(selectedDept, selectedLoc); // Assumes getAll() is defined elsewhere
+    $("#filterModal").modal("hide");
+  });
+
+  // Remove backdrop when the modal is shown
+  $("#filterModal").on("shown.bs.modal", function () {
+    $(".modal-backdrop").remove(); // Remove backdrop
+    $("#departmentFilter").focus(); // Optionally set focus to the first dropdown
+  });
+
+  // Change event for department filter
+  $("#departmentFilter").change(function () {
+    let selectedDept = $(this).val();
+    if (selectedDept !== "getAll") {
+      filterLocationsByDepartment(selectedDept);
+    }
+  });
+
+  // Change event for location filter
+  $("#locationFilter").change(function () {
+    let selectedLoc = $(this).val();
+    if (selectedLoc !== "getAll") {
+      filterDepartmentsByLocation(selectedLoc);
+    }
+  });
+});
+
+// Function to populate filter dropdowns
+function populateFilterDropdowns() {
+  // Fetch and populate department dropdown
+  ajaxHandler.get("getAllDepartments.php", function (response) {
+    let deptOptions = '<option value="getAll">All Departments</option>';
+    response.data.forEach((dept) => {
+      deptOptions += `<option value="${dept.id}">${dept.name}</option>`;
+    });
+    $("#departmentFilter").html(deptOptions);
+  });
+
+  // Fetch and populate location dropdown
+  ajaxHandler.get("fetchAllLocations.php", function (response) {
+    let locOptions = '<option value="getAll">All Locations</option>';
+    response.data.forEach((loc) => {
+      locOptions += `<option value="${loc.id}">${loc.name}</option>`;
+    });
+    $("#locationFilter").html(locOptions);
+  });
+}
+
+// Function to filter locations based on selected department
+function filterLocationsByDepartment(deptId) {
+  ajaxHandler.get(
+    "getLocationsByDepartment.php",
+    { deptId: deptId },
+    function (response) {
+      let locOptions = '<option value="getAll">All Locations</option>';
+      response.data.forEach((loc) => {
+        locOptions += `<option value="${loc.id}">${loc.name}</option>`;
+      });
+      $("#locationFilter").html(locOptions);
+    }
+  );
+}
+
+// Function to filter departments based on selected location
+function filterDepartmentsByLocation(locId) {
+  ajaxHandler.get(
+    "getDepartmentsByLocation.php",
+    { locId: locId },
+    function (response) {
+      let deptOptions = '<option value="getAll">All Departments</option>';
+      response.data.forEach((dept) => {
+        deptOptions += `<option value="${dept.id}">${dept.name}</option>`;
+      });
+      $("#departmentFilter").html(deptOptions);
+    }
+  );
+}
+
 // Tables //
 
 // Full employee Table
-function getAll() {
-  // Perform AJAX GET request to getAll.php
+function getAll(deptId = null, locId = null) {
+  let queryParams = {};
+  if (deptId && deptId !== "getAll") queryParams.departmentId = deptId;
+  if (locId && locId !== "getAll") queryParams.locationId = locId;
+
+  // Construct URL with query parameters
+  let queryStr = $.param(queryParams);
+  let url = `getAll.php?${queryStr}`;
+
   ajaxHandler.get(
-    "getAll.php",
+    url,
     function (response) {
       // Map each employee member in the returned data to a table row
       const rows = response.data.map((employee) => {
@@ -429,14 +538,6 @@ $("#addEmployee").submit(function (e) {
           `<div class='alert alert-success'>${firstName} ${lastName} has been added to the directory</div>`
         );
 
-        // Close the employee modal after 2 seconds
-        setTimeout(() => {
-          $("#insertNewEmployee").modal("hide");
-          $("#addEmployee")[0].reset(); // Clear the form
-          $("#newemployeeResponse").empty(); // Clear the success message
-          // TODO: Maybe refresh the department and location lists too?
-        }, 2000);
-
         getAll(); // Reload the table
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
@@ -482,14 +583,6 @@ $("#addDepartment").submit(function (e) {
         $("#newDeptResponse").html(
           `<div class='alert alert-success'>${deptName} has been added as a new department</div>`
         );
-
-        // Close the department modal after 2 seconds
-        setTimeout(() => {
-          $("#insertNewDepartment").modal("hide");
-          $("#addDepartment")[0].reset(); // Clear the form
-          $("#newDeptResponse").empty(); // Clear the success message
-          // TODO: Maybe refresh the employee and location lists too?
-        }, 2000);
 
         populateDeptsTable(); // Reload the department table
         getAllDepartments(); // Update all department dropdowns
@@ -539,14 +632,6 @@ $("#addLocation").submit(function (e) {
           `<div class='alert alert-success'>${locName} has been added as a new location</div>`
         );
 
-        // Close the location modal after 2 seconds
-        setTimeout(() => {
-          $("#insertNewLocation").modal("hide");
-          $("#addLocation")[0].reset(); // Clear the form
-          $("#newLocResponse").empty(); // Clear the success message
-          // TODO: Maybe refresh the employee and department lists too?
-        }, 2000);
-
         fetchAllLocations(); // Reload the location table
         $(".modal-backdrop").remove(); // Remove the backdrop
       }
@@ -588,12 +673,6 @@ $("#editPersonForm").submit(function (e) {
           $("#editEmployeeResponse").html(
             "<div class='alert alert-success'>Successfully Edited Employee</div>"
           );
-          setTimeout(() => {
-            $("#editPerson").modal("hide");
-            $("#editPersonForm")[0].reset();
-            $("#editEmployeeResponse").html(""); // Clear the message
-          }, 2000); // keep the modal open for 2 more seconds
-
           getAll(); // Refresh the table
         } else {
           console.log("Error editing employee");
@@ -616,6 +695,8 @@ $("#editPersonForm").submit(function (e) {
 
 // Populate data when the modal is shown
 $("#editPerson").on("show.bs.modal", function (e) {
+  $("#editEmployeeResponse").empty();
+
   const personID = $(e.relatedTarget).attr("data-id");
 
   ajaxHandler.post(
@@ -676,6 +757,8 @@ function showEditEmployeeConfirmation(confirmCallback) {
     });
   });
 }
+
+// Edit Departments
 
 // Function to populate the Edit Department modal with current data
 function populateEditDeptModal(departmentId) {
@@ -769,11 +852,7 @@ $("#editDeptForm").submit(function (e) {
           $("#editDeptResponse").html(
             "<div class='alert alert-success'>Successfully Edited Department</div>"
           );
-          setTimeout(() => {
-            $("#editDept2").modal("hide");
-            $("#editDeptForm")[0].reset();
-            $("#editDeptResponse").html("");
-          }, 2000);
+
           getAllDepartments();
           populateDeptsTable(); // New function for departments
         } else {
@@ -794,24 +873,24 @@ $("#editDeptForm").submit(function (e) {
 
 // Fetch data and populate the modal before it is shown
 $("#editDept2").on("show.bs.modal", function (e) {
+  $("#editDeptResponse").empty();
+
   const departmentId = $(e.relatedTarget).attr("data-id");
   populateEditDeptModal(departmentId);
 });
 
 // Fetch data and populate the modal before it is shown
 $("#editLocation").on("show.bs.modal", function (e) {
+  $("#editLocResponse").empty(); // Clear any existing messages
+
   const idToBeFetched = $(e.relatedTarget).attr("data-id");
 
   ajaxHandler.post(
     "fetchLocID.php",
     { id: idToBeFetched },
     function (result) {
-      console.group(result);
-      const locationIDtoBeUpdate = result.data[0].id;
-      const resultCode = result.status.code.toString();
-
-      if (resultCode === "200") {
-        $("#editLocationSelect").val(locationIDtoBeUpdate);
+      if (result.status.code.toString() === "200") {
+        $("#editLocationSelect").val(result.data[0].id);
         $("#editLocationName").val(result.data[0].name);
       } else {
         console.log("Error getting data. resultCode is not 200.");
@@ -861,11 +940,7 @@ $("#editLocationForm").submit(function (e) {
           $("#editLocResponse").html(
             "<div class='alert alert-success'>Location Updated</div>"
           );
-          setTimeout(() => {
-            $("#editLocation").modal("hide");
-            $("#editLocationForm")[0].reset();
-            $("#editLocResponse").html(""); // Clear the message
-          }, 2000); // keep the modal open for 2 more seconds
+
           fetchAllLocations(); // Refresh the table data
         } else {
           $("#editLocResponse").html(
@@ -946,63 +1021,32 @@ $("#cancelDelete").on("click", function () {
 
 // TODO: Maybe add a function to reset the global variables after use
 
-// Delete Department with Toast
-// Declare global variables for department ID and name
+// Global variables for department ID and name
 let departmentIdToBeDeleted;
 let departmentName;
 
-// TODO: Consider encapsulating these globals into an object or a closure for better structure
-
+// Function to initiate the delete process for a department
 $(document).on("click", ".deleteDeptBtn", function (e) {
   e.preventDefault();
-  departmentIdToBeDeleted = $(this).data("id");
-  let department = $(this).closest("tr").find("td");
-  departmentName = $(department).eq(1).text();
+  departmentIdToBeDeleted = $(this).data("id"); // Get department ID
+  departmentName = $(this).closest("tr").find("td").eq(1).text(); // Get department name
 
-  // Update the toast body and show it
-  $("#confirmDeptDelete .toast-body").text(
-    `Are you sure you want to delete ${departmentName}?`
-  );
-  $("#confirmDeptDelete").toast("show");
+  // Check for dependencies before showing delete confirmation
+  checkDeptForDependencies();
 });
 
-// TODO: Maybe refactor this into its own function for reusability
-
-// Confirm the deletion of the department
-$("#confirmDeptDeleteButton").on("click", function () {
-  // Hide the confirmation toast immediately
-  $("#confirmDeptDelete").toast("hide");
-
-  // TODO: Add a loading indicator here for better user experience
-
-  // First, check for dependencies via your PHP script
+// Function to check for dependencies of a department
+function checkDeptForDependencies() {
   ajaxHandler.post(
-    "deleteDept.php",
+    "deleteDept.php", // Script to check for department dependencies
     { id: departmentIdToBeDeleted },
     function (response) {
-      // TODO: Validate the response more thoroughly
       let deptNum = response.data[0].departmentCount;
       if (response.status.code === "200" && deptNum === 0) {
-        // Now, proceed with deletion
-        ajaxHandler.post(
-          "deleteDepartmentByID.php",
-          { id: departmentIdToBeDeleted },
-          function (response) {
-            // TODO: Validate the response more thoroughly
-            if (response.status.code === "200") {
-              showSuccessToast(`${departmentName} has been removed.`);
-              populateDeptsTable(); // Reload the table
-              getAllDepartments(); // Update department dropdowns if necessary
-            } else {
-              // TODO: Improve this error message to be more informative
-              showToast("Error deleting department.", "red");
-            }
-          },
-          function () {
-            showToast("Error deleting department.", "red");
-          }
-        );
+        // No dependencies, show confirmation modal
+        showDeptDeleteConfirmation();
       } else {
+        // Dependencies exist, show error toast
         showToast(
           `${departmentName} cannot be removed due to dependent employees. ${deptNum} in total.`,
           "red"
@@ -1010,10 +1054,45 @@ $("#confirmDeptDeleteButton").on("click", function () {
       }
     },
     function () {
-      showToast("Error fetching department details.", "red");
+      showToast("Error checking department dependencies.", "red");
     }
   );
+}
+
+// Function to show delete confirmation modal for department
+function showDeptDeleteConfirmation() {
+  $("#confirmDeptDelete .toast-body").text(
+    `Are you sure you want to delete ${departmentName}?`
+  );
+  $("#confirmDeptDelete").toast("show");
+}
+
+// Confirm the deletion of the department
+$("#confirmDeptDeleteButton").on("click", function () {
+  deleteDepartment();
 });
+
+// Function to delete the department
+function deleteDepartment() {
+  $("#confirmDeptDelete").toast("hide");
+
+  ajaxHandler.post(
+    "deleteDepartmentByID.php",
+    { id: departmentIdToBeDeleted },
+    function (response) {
+      if (response.status.code === "200") {
+        showSuccessToast(`${departmentName} has been removed.`);
+        populateDeptsTable(); // Reload the table
+        getAllDepartments(); // Update department dropdowns if necessary
+      } else {
+        showToast("Error deleting department.", "red");
+      }
+    },
+    function () {
+      showToast("Error deleting department.", "red");
+    }
+  );
+}
 
 // Cancel the department deletion
 $("#cancelDeptDelete").on("click", function () {
@@ -1022,63 +1101,32 @@ $("#cancelDeptDelete").on("click", function () {
 
 // TODO: Maybe add a function to reset the global variables after use
 
-// Remove a location
-// Declare global variables for location ID and name
+// Global variables for location ID and name
 let locationIdToBeDeleted;
 let locationName;
 
-// TODO: Consider encapsulating these global variables into an object or a closure for better code organization.
-
-// Function to delete a Location by ID
+// Function to initiate the delete process for a location
 $(document).on("click", ".deleteLocationBtn", function (e) {
   e.preventDefault();
   locationIdToBeDeleted = parseInt($(this).attr("data-id")); // Convert to integer
-  let location = $(this).closest("tr").find("td");
-  locationName = $(location).eq(1).text(); // Update the global variable
+  locationName = $(this).closest("tr").find("td").eq(1).text(); // Get location name
 
-  // Update the toast body and show it
-  $("#confirmLocationDelete .toast-body").text(
-    `Are you sure you want to delete ${locationName}?`
-  );
-  $("#confirmLocationDelete").toast("show");
+  // Check for dependencies before showing delete confirmation
+  checkForDependencies();
 });
 
-// TODO: Consider refactoring the above into its own function for reusability.
-
-// Confirm the deletion of the location
-$("#confirmLocationDeleteButton").on("click", function () {
-  // Hide the confirmation toast immediately
-  $("#confirmLocationDelete").toast("hide");
-
-  // TODO: Add a loading indicator here for a better user experience.
-
-  // First, check for dependencies via your PHP script
+// Function to check for dependencies of a location
+function checkForDependencies() {
   ajaxHandler.post(
     "removeLocation.php",
     { id: locationIdToBeDeleted },
     function (response) {
-      // TODO: Validate the response more thoroughly.
       let locNum = response.data[0].locNum;
       if (response.status.code === "200" && locNum === 0) {
-        // Now, proceed with deletion
-        ajaxHandler.post(
-          "removeLocationByID.php",
-          { id: locationIdToBeDeleted },
-          function (response) {
-            // TODO: Validate the response more thoroughly.
-            if (response.status.code === "200") {
-              showSuccessToast(`${locationName} has been removed.`);
-              fetchAllLocations(); // Refresh the table
-            } else {
-              // TODO: Make this error message more informative based on server's response.
-              showToast("Error deleting location.", "red");
-            }
-          },
-          function () {
-            showToast("Error deleting location.", "red");
-          }
-        );
+        // No dependencies, show confirmation modal
+        showDeleteConfirmation();
       } else {
+        // Dependencies exist, show error toast
         showToast(
           `${locationName} cannot be removed due to dependent departments.`,
           "red"
@@ -1086,10 +1134,44 @@ $("#confirmLocationDeleteButton").on("click", function () {
       }
     },
     function () {
-      showToast("Error fetching location details.", "red");
+      showToast("Error checking location dependencies.", "red");
     }
   );
+}
+
+// Function to show delete confirmation modal
+function showDeleteConfirmation() {
+  $("#confirmLocationDelete .toast-body").text(
+    `Are you sure you want to delete ${locationName}?`
+  );
+  $("#confirmLocationDelete").toast("show");
+}
+
+// Confirm the deletion of the location
+$("#confirmLocationDeleteButton").on("click", function () {
+  deleteLocation();
 });
+
+// Function to delete the location
+function deleteLocation() {
+  $("#confirmLocationDelete").toast("hide");
+
+  ajaxHandler.post(
+    "removeLocationByID.php",
+    { id: locationIdToBeDeleted },
+    function (response) {
+      if (response.status.code === "200") {
+        showSuccessToast(`${locationName} has been removed.`);
+        fetchAllLocations(); // Refresh the table
+      } else {
+        showToast("Error deleting location.", "red");
+      }
+    },
+    function () {
+      showToast("Error deleting location.", "red");
+    }
+  );
+}
 
 // Cancel the deletion of the location
 $("#cancelLocationDelete").on("click", function () {
@@ -1098,13 +1180,12 @@ $("#cancelLocationDelete").on("click", function () {
 
 // TODO: Consider adding a function to reset the global variables after use.
 
-// Function to show toast with color and autohide after a specific delay
-function showToast(message, color, delay = 2000) {
-  // Add delay parameter with default value
+// Function to show toast with color without autohide
+function showToast(message, color) {
   $("#myToast .toast-body").text(message);
   $("#myToast").removeClass("toast-red toast-green").addClass(`toast-${color}`);
-  // Show toast with autohide and delay options
-  $("#myToast").toast({ autohide: true, delay: delay }).toast("show");
+  // Show toast without autohide
+  $("#myToast").toast({ autohide: false }).toast("show");
 }
 
 // PRELOADER //
