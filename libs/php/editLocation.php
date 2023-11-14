@@ -22,16 +22,14 @@ if (mysqli_connect_errno()) {
 	exit;
 }
 
-// $_REQUEST used for development / debugging. Remember to change to $_POST for production	
-
 $_POST['name'] = trim($_POST['name']);
 $_POST['name'] = preg_replace('# {2,}#', ' ', $_POST['name']);
 $_POST['name'] = ucwords(strtolower($_POST['name']));
 
+$query = $conn->prepare('UPDATE location SET name = ? WHERE id = ?');
+$query->bind_param("si", $_POST['name'], $_POST['id']);
 
-$query = 'UPDATE location SET name = "' . $_POST['name'] . '" WHERE id = ' . $_POST['id'];
-
-$result = $conn->query($query);
+$result = $query->execute();
 
 if (!$result) {
 
