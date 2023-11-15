@@ -1,25 +1,50 @@
 @import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
 
-// // Global Styles
-// * {
-//   font-family: 'Poppins', sans-serif;  // Setting Poppins as the primary font
-//   text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);  // Slight shadow for all text
-//   box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);  // Slight shadow for all boxes
-  
-//     margin: 5;
-//     padding: 5;
-//     box-sizing: border-box;
-  
-  
-// }
-
-html,
-body {
+// Preloader
+#loader {
+  position: fixed;
+  border: 1px solid rgb(212, 222, 255);
+  box-shadow: 5px 5px 25px whitesmoke;
+  border-radius: 8px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: #f9f6ee;
+  opacity: 1;
+  transition: opacity 4s ease-out;
+  z-index: 9999;
+  overflow: hidden;
+
+  // Loader Text Styles
+  #loader-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 68px;
+    color: rgb(15, 4, 68);
+    text-shadow: 0 0 3px rgb(15, 4, 68);
+    left: 0%;
+    animation: moveText 5s linear;
+  }
+}
+
+// Text Animation Keyframes
+@keyframes moveText {
+  0% { transform: translateY(200%); }
+  50% { transform: translateY(0%); }
+  100% { transform: translateY(-200%); }
+}
+
+// Basic Styling
+html, body {
+  background-color: #f9f6ee;
+  font-family: 'Poppins', sans-serif;
   margin: 5px;
   overflow: hidden;
 }
 
+// Page Sections
 section {
   background-color: #f9f6ee;
   display: flex;
@@ -27,72 +52,7 @@ section {
   height: calc(100vh - 20px);
 }
 
-// body {
-// background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba(5,2,54,1) 80%);
-// }
-
-// Preloader 
-
-// #preloader {
-//   position: fixed;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   background: radial-gradient(circle, rgba(9,9,121,1) 5%, rgba(5,2,54,1) 80%, rgba(5,2,54,1) 80%);
-//   z-index: 9999;
-//   .spinner {
-//     position: absolute;
-//     top: 50%;
-//     left: 50%;
-//     width: 150px;
-//     height: 150px;
-//     border: 15px solid rgba(9,9,121,1);
-//     border-radius: 50%;
-//     border-top-color: #00fff9;
-//     animation: spin 1s linear infinite, color-change 2s linear infinite;
-//     transform: translate(-50%, -50%) rotate(0deg);
-//     box-sizing: border-box; // Added this line
-//     // Enhanced box-shadow
-//   box-shadow: 
-//   0 0 10px #00fff9,  // Slight glow
-//   0 0 30px #00fff9,  // Medium glow
-//   0 0 60px #00fff9,  // Strong glow
-//   0 0 100px #00fff9, // Very strong glow
-//   0 0 120px #00fff9, // Intense glow
-//   0 0 150px #00fff9, // Extremely intense glow
-//   0 0 200px #00fff9; // Maximum glow
-// }
-
-  
-// }
-
-// @keyframes spin {
-//   0% {
-//     transform: rotate(0deg);
-//   }
-//   100% {
-//     transform: rotate(360deg);
-//   }
-// }
-
-// @keyframes color-change {
-//   0% {
-//     border-top-color: #00fff9;  // Neon blue
-//     box-shadow: 0 0 10px #00fff9, 0 0 30px #00fff9, 0 0 60px #ffffff, 0 0 120px #00fff9;
-//   }
-//   50% {
-//     border-top-color: #ffffff;  // White
-//     box-shadow: 0 0 10px #ffffff, 0 0 30px #ffffff, 0 0 60px #00fff9, 0 0 120px #ffffff;
-//   }
-//   100% {
-//     border-top-color: #00fff9;  // Neon blue
-//     box-shadow: 0 0 10px #00fff9, 0 0 30px #00fff9, 0 0 60px #ffffff, 0 0 120px #00fff9;
-//   }
-// }
-
-
-
+// Footer Styling
 #company-directory-footer {
   text-align: center;
   padding: 20px;
@@ -116,192 +76,98 @@ section {
     a {
       color: #775959;
       text-decoration: none;
-      font-size: 1.5em;  // Increase the font size for bigger icons
+      font-size: 1.5em;
 
-      &:hover {
-        color: #1d0707;
-      }
+      &:hover { color: #1d0707; }
     }
   }
 }
 
-
-
-
-// Updated styles for .nav-pills
-.nav-pills {
+// Navigation Styles
+.nav-pills, .nav-tabs {
   border: none;
 
   .nav-item {
     .nav-link {
       margin: 5px;
-
-      // Increase the font size for bigger icons
-      i.fas {
-        font-size: 2em;
-      }
+      i.fas { font-size: 2em; }
 
       &.active, &:hover {
         box-shadow: 0 0 5px white;
+        &.nav-tabs { background-color: #007bff; color: white; }
       }
     }
   }
 }
 
-
-// Additional styles for .nav-tabs
-.nav-tabs {
-  .nav-link {
-    border: 1px solid transparent;
-
-    &.active {
-      background-color: #007bff;
-      color: white;
-    }
-
-    &:hover {
-      border: 1px solid #ddd;
-    }
-  }
-}
-
+// Global Link and Button Styles
 a, button {
   transition: all 0.3s ease-in-out;
 
-  &:hover {
-    box-shadow: 0 0 5px white;
-  }
+  &:hover { box-shadow: 0 0 5px white; }
 }
 
-// New #navbar styles
+// Navbar Styles
 #navbar {
-  margin-top: 0;  // No top margin as it's a navbar
-  padding: 10px;  // Similar padding to #main
-  border-radius: 0 0 10px 10px;  // Rounded corners at the bottom
-  position: sticky;  // Make it stick to the top
-  top: 0;  // Stick to the top of the page
-  z-index: 1000;  // High z-index to make sure it's above other content
+  margin-top: 0;
+  padding: 10px;
+  border-radius: 0 0 10px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   opacity: 0;
-
 }
 
-
-
-
-.nav-link {
-  font-weight: bold;
-}
-
-
-
-
+// Flex Containers
 #searchAndFilter, #icons {
   display: flex;
 }
 
-#addButton {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  box-shadow: 0 0 2px white;
-  border-radius: 1px;
-}
-
-
-nav.navbar {
-  box-shadow: 0px 1px 2px rgba(16, 0, 107, 0.1);
-
-  a.navbar-brand {
-    text-shadow: 0 0 2px rgb(11, 10, 70);
-    transition: 0.3s ease-in-out;
-  }
-}
-
-
-
-#tableHead {
-  position: sticky;
-  
-}
-
+// Table Styles
 .table-wrapper, .table-wrapper-scroll-y {
   border-radius: 8px;
-
-  table {
-    min-width: 100%;  // Ensures that the table takes up the full width of the container
-    th, td {
-      min-height: 50px;  // Adjust this value based on your needs
-      text-align: center;
-    }
-  }
-}
-
-// Ensure all tables have the same height
-.table-wrapper, .table-wrapper-scroll-y {
-  height: 43.75em;  // Converted from 700px
+  height: 43.75em;
   overflow-y: auto;
 
   table {
     min-width: 100%;
 
-    th, td {  // Combine similar styles
-      min-height: 3.125em;  // Converted from 50px
+    th, td {
+      min-height: 2em;
       text-align: center;
+
+      &:nth-child(3), &:nth-last-child(2), &:last-child {
+        width: 110px;
+      }
     }
 
-    td {
-      text-align: left;
-    }
-
-   /* Fixed width and centered text for 'Employee Count' column */
-   th:nth-child(3), td:nth-child(3) {
-    width: 110px;
-    text-align: center;
-  }
-th:nth-last-child(2), td:nth-last-child(2) {
-  width: 110px;
-  text-align: center;
-}
-
-/* Fixed width and centered text for 'Edit/Delete' column */
-th:last-child, td:last-child {
-  width: 110px;
-  text-align: center;
-}
-
-
+    td { text-align: left; }
   }
 }
 
-
-
-
-
-
+// Tab Pane Transition
 .tab-pane {
-  transition: opacity 0.5s ease-in-out; // Existing transition style
-  overflow-y: auto; // Enable vertical scroll
+  transition: opacity 0.5s ease-in-out;
+  overflow-y: auto;
 
   &.fade {
     opacity: 0;
-    display: block; // Ensures the pane can transition in
-    height: 0; 
-    overflow: hidden; // Ensures content doesn't spill
+    display: block;
+    height: 0;
+    overflow: hidden;
   }
 
   &.show {
     opacity: 1;
-    height: auto; // Allows content to expand
-    overflow-y: auto; // Enable vertical scroll when content expands
+    height: auto;
   }
 }
 
-
-
+// Button Styling
 .btn-primary {
   position: relative;
   z-index: 1;
 
-  // Pseudo-element for gradient
   &::before {
     content: "";
     position: absolute;
@@ -314,80 +180,54 @@ th:last-child, td:last-child {
   }
 }
 
-// Toast styling
-
+// Toast Styling
 #myToast, #editLocationConfirmToast, #confirmEmployeeDelete, #editEmployeeConfirmToast, #confirmDeptDelete, #confirmLocationDelete, #successToast, #editDeptConfirmToast {
+  @extend .toast-position;
+}
+
+%toast-position {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0.9;
-  z-index: 9999; // To make sure it appears above modals
+  z-index: 9999;
 }
 
-/* Custom Red Toast */
-.toast-red {
-  background-color: #911c1c; /* Red background */
-  color: white; /* White text */
-  box-shadow: 0 0 2px #911c1c, 0 0 6px #911c1c, 0 0 10px red;
-  border: 1px solid #911c1c;
+.toast-red, .toast-green {
+  box-shadow: 0 0 2px $color, 0 0 6px $color, 0 0 10px $brighter-color;
+  border: 1px solid $color;
+  background-color: $color;
+  color: white;
+
+  .toast-header {
+    background-color: darken($color, 10%);
+    color: white;
+    text-shadow: 0 0 2px white;
+    font-size: 1.2rem;
+  }
+
+  .toast-body { color: white; }
 }
 
-.toast-red .toast-header {
-  background-color: #911c1c; /* Darker red for header */
-  color: white; /* White text */
-  text-shadow: 0 0 2px white;
-  font-size: 1.2rem;
-}
+.toast-red { $color: #911c1c; $brighter-color: red; }
+.toast-green { $color: #218838; $brighter-color: lime; }
 
-.toast-red .toast-body {
-  color: white; /* White text */
-}
-
-/* Custom Green Toast */
-.toast-green {
-  background-color: #218838; /* Green background */
-  color: white; /* White text */
-  box-shadow: 0 0 2px #218838, 0 0 6px #218838, 0 0 10px lime;
-  border: 1px solid #218838;
-}
-
-.toast-green .toast-header {
-  background-color: #218838; /* Darker green for header */
-  color: white; /* White text */
-  text-shadow: 0 0 2px white;
-  font-size: 1.2rem;
-}
-
-.toast-green .toast-body {
-  color: white; /* White text */
-}
-
-
+// Responsive Design for Smaller Screens
 @media (max-width: 768px) {
-
   #company-directory-heading {
-    
-    margin-bottom: -15%;  // Adds some space at the bottom
-    font-size: 2em;  // Sets the font size
+    margin-bottom: -15%;
+    font-size: 2em;
   }
 
   .table-wrapper-scroll-y, .table-wrapper {
-    height: 30.75em;  // Converted from 700px
-
+    height: 30.75em;
     overflow-x: auto;
-  }
 
-  table th, table td {
-    font-size: 0.8em;  // Optional: Reduce font size
-  }
+    table th, table td {
+      font-size: 0.8em;
+    }
 
-  // Hide certain columns for smaller screens if needed
-  .tableHide {
-    display: none;
+    .tableHide { display: none; }
   }
 }
-
-
-
-

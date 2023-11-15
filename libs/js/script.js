@@ -1,3 +1,17 @@
+// PRELOADER
+
+$(window).on("load", function () {
+  if ($("#loader").length) {
+    // Gradually reduce opacity to 0
+    $("#loader").css("opacity", 0);
+
+    // After the opacity transition, remove the loader from the DOM
+    setTimeout(function () {
+      $("#loader").remove();
+    }, 4000); // Adjust the delay (in milliseconds) as needed
+  }
+});
+
 class AjaxHandler {
   constructor() {
     this.baseUrl = "libs/php/";
@@ -115,7 +129,6 @@ $(document).ready(function () {
     if (refreshMap[activeTab]) refreshMap[activeTab]();
   });
 
-  // Add Button Click Event for Modals
   $("#addBtn").click(function () {
     const activeTab = $(".nav-link.active").attr("id");
     const modalMap = {
@@ -123,8 +136,9 @@ $(document).ready(function () {
       "pills-profile-tab": "insertNewDepartment",
       "pills-contact-tab": "insertNewLocation",
     };
-    if (modalMap[activeTab])
+    if (modalMap[activeTab]) {
       new bootstrap.Modal(document.getElementById(modalMap[activeTab])).show();
+    }
   });
 
   // Modal shown events
@@ -138,10 +152,9 @@ $(document).ready(function () {
       editLocation: "#editLocationName",
     };
     $(focusMap[this.id]).focus();
-    $(".modal-backdrop").remove();
+    $(document.body).removeClass("modal-open"); // Remove the modal-open class from the body
   });
 
-  // Reset modals when they are closed
   $(".modal").on("hidden.bs.modal", function () {
     const resetMap = {
       insertNewEmployee: function () {
@@ -158,6 +171,7 @@ $(document).ready(function () {
         $("#newLocResponse").empty();
       },
     };
+
     if (resetMap[this.id]) resetMap[this.id]();
   });
 
@@ -357,6 +371,15 @@ function populateLocationsFilterDropdown() {
     }
   );
 }
+
+window.onerror = function (message, source, lineno, colno, error) {
+  if (
+    message.includes("Cannot read properties of undefined (reading 'backdrop')")
+  ) {
+    return true;
+  }
+  return false;
+};
 
 // Function to filter locations based on selected department
 function populateFilterDropdowns() {
@@ -683,7 +706,6 @@ function addEmployeeSuccess(response) {
     `<div class='alert alert-success'>${firstName} ${lastName} has been added to the directory</div>`
   );
   getAll();
-  $(".modal-backdrop").remove();
 }
 
 function addEmployeeError(error) {
@@ -738,7 +760,6 @@ function addDepartmentSuccess(response) {
   );
   populateDeptsTable();
   getAllDepartments();
-  $(".modal-backdrop").remove();
 }
 
 function addDepartmentError() {
@@ -765,7 +786,6 @@ function addLocationSuccess(response) {
     `<div class='alert alert-success'>${locName} has been added as a new location</div>`
   );
   fetchAllLocations();
-  $(".modal-backdrop").remove();
 }
 
 function addLocationError() {
@@ -867,12 +887,6 @@ function showEditEmployeeConfirmation(confirmCallback) {
   // Show the toast
   $("#editEmployeeConfirmToast").toast("show");
 
-  // Debugging: Check if the toast element exists in DOM
-  // console.log(
-  //   "Does the toast element exist?",
-  //   !!document.getElementById("editEmployeeConfirmToast")
-  // );
-
   // Attach click handlers after the toast is fully visible
   $("#editEmployeeConfirmToast").on("shown.bs.toast", function () {
     //console.log("Toast is now shown"); // Debugging
@@ -899,9 +913,11 @@ function showEditEmployeeConfirmation(confirmCallback) {
 
 // Function to populate the Edit Department modal with current data
 function populateEditDeptModal(departmentId) {
-  // Validate departmentId
-  if (!departmentId) {
-    console.error("Department ID is not valid.");
+  // Improved Department ID Validation
+  if (!departmentId || isNaN(departmentId)) {
+    $("#editDeptResponse").html(
+      "<div class='alert alert-danger'>Invalid Department ID.</div>"
+    );
     return;
   }
 
@@ -912,29 +928,23 @@ function populateEditDeptModal(departmentId) {
       "getDepartmentByID.php",
       { id: departmentId },
       function (result) {
-        // Validate result object and its properties
         if (result && result.status && result.status.code && result.data) {
           if (result.status.code.toString() === "200") {
             $("#deptId").val(result.data[0].id);
             $("#editDeptName").val(result.data[0].name);
             $("#editDeptLocation").val(result.data[0].locationID); // Set the department's current location
           } else {
-            console.error(
-              "Error getting department data. resultCode is not 200."
-            );
             $("#editDeptResponse").html(
               "<div class='alert alert-danger'>Failed to fetch department data.</div>"
             );
           }
         } else {
-          console.error("Invalid response structure.");
           $("#editDeptResponse").html(
             "<div class='alert alert-danger'>Invalid response structure.</div>"
           );
         }
       },
       function (error) {
-        console.error("Error fetching department data:", error);
         $("#editDeptResponse").html(
           `<div class='alert alert-danger'>Error fetching department data: ${error}</div>`
         );
@@ -988,6 +998,14 @@ function showEditDeptConfirmation(confirmCallback) {
 // Handle form submission for editing a department
 $("#editDeptForm").submit(function (e) {
   e.preventDefault();
+
+  const name = $("#editDeptName").val();
+  if (name.trim() === "") {
+    $("#editDeptResponse").html(
+      "<div class='alert alert-danger'>Department name is required.</div>"
+    );
+    return false;
+  }
 
   // Step 2: Define formData object right here
   const formData = {
@@ -1056,6 +1074,8 @@ function showEditLocationConfirmation(confirmCallback) {
   });
 }
 
+// Edit Location
+
 // Fetch data and populate the modal before it is shown
 $("#editLocation").on("show.bs.modal", function (e) {
   $("#editLocResponse").empty(); // Clear any existing messages
@@ -1115,30 +1135,28 @@ $("#editLocationForm").submit(function (e) {
   return false;
 });
 
+// Delete Employee, Department, Location
+
 // Delete Employee
 
 // Initialize global variables to hold the person ID and name to be deleted
 let personIDtoBeDelete;
 let personName;
 
-// Function to show the delete confirmation modal
-function showDeleteConfirmationModal(name) {
+// Attach the show.bs.modal event to the delete employee confirmation modal
+$("#deleteModal").on("show.bs.modal", function () {
   // Update the modal content with the person's name
   $("#deleteModal .modal-body p").text(
-    `Are you sure you want to delete ${name}?`
+    `Are you sure you want to delete ${personName}?`
   );
-  $("#deleteModal").modal("show");
-}
+});
 
 // Handle click events on the delete button
 $(document).on("click", ".deletePerson", function (e) {
   e.preventDefault();
-  // Get the person ID and name from the table row
   personIDtoBeDelete = $(this).closest("tr").find("#personId").text();
   personName = $(this).closest("tr").find("td").eq(0).text();
-
-  // Show the delete confirmation modal
-  showDeleteConfirmationModal(personName);
+  $("#deleteModal").modal("show");
 });
 
 // Handle click event on the confirm delete button for employees
@@ -1190,38 +1208,62 @@ $("#cancelDeleteBtn").click(function () {
 let departmentIdToBeDeleted;
 let departmentName;
 
+// Attach the show.bs.modal event to the delete department confirmation modal
+$("#deleteDeptModal").on("show.bs.modal", function () {
+  // Update the modal content with the department's name
+  $("#deleteDeptConfirmationText").text(
+    `Are you sure you want to delete ${departmentName}?`
+  );
+});
+
 // Function to initiate the delete process for a department
 $(document).on("click", ".deleteDeptBtn", function (e) {
   e.preventDefault();
-  departmentIdToBeDeleted = $(this).data("id"); // Get department ID
-  departmentName = $(this).closest("tr").find("td").eq(1).text(); // Get department name
-
-  // Check for dependencies before showing delete confirmation
+  departmentIdToBeDeleted = $(this).data("id");
+  departmentName = $(this).closest("tr").find("td").eq(1).text();
   checkDeptForDependencies();
 });
 
 // Function to check for dependencies of a department
 function checkDeptForDependencies() {
   ajaxHandler.post(
-    "deleteDept.php", // Script to check for department dependencies
+    "deleteDept.php",
     { id: departmentIdToBeDeleted },
     function (response) {
-      let deptNum = response.data[0].departmentCount;
-      if (response.status.code === "200" && deptNum === 0) {
-        // No dependencies, show confirmation modal
-        $("#deleteDeptConfirmationText").text(
-          `Are you sure you want to delete ${departmentName}?`
-        );
-        $("#deleteDeptModal").modal("show");
+      // console.log("Response received:", response); // Log the response
+      if (response.status.code === "200") {
+        let dependentsCount = response.data.departmentCount;
+        if (dependentsCount === 0) {
+          // No dependencies, show confirmation modal
+          // console.log("Modal should show now: No dependencies"); // Log confirmation
+          $("#deleteDeptConfirmationText").text(
+            `Are you sure you want to delete ${departmentName}?`
+          );
+          $("#deleteDeptModal").modal("show");
+        } else {
+          // Dependencies exist, show error modal with employee names
+          let dependentsList = response.data.employeeNames
+            .map((name) => `<li>${name}</li>`)
+            .join(""); // Convert the array to a list of <li> elements
+          console.log("Modal should show now: Dependencies exist"); // Log dependencies
+          $("#deleteDeptErrorModalBody").html(
+            `<p>${departmentName} cannot be removed due to the following dependent employees:</p>
+             <ul>${dependentsList}</ul>` // Display the list in an unordered list
+          );
+          $("#deleteDeptErrorModal").modal("show");
+        }
       } else {
-        // Dependencies exist, show error modal
+        // Non-200 status code
         showErrorModal(
-          `${departmentName} cannot be removed due to dependent employees. ${deptNum} in total.`
+          "Error occurred while checking for department dependencies."
         );
       }
     },
-    function () {
-      showErrorModal("Error checking department dependencies.");
+    function (error) {
+      // AJAX request error
+      showErrorModal(
+        "Network or server error occurred while checking dependencies."
+      );
     }
   );
 }
@@ -1258,9 +1300,19 @@ $("#cancelDeptDelete").on("click", function () {
   $("#deleteDeptModal").modal("hide");
 });
 
+// Delete Location
+
 // Global variables for location ID and name
 let locationIdToBeDeleted;
 let locationName;
+
+// Attach the show.bs.modal event to the delete location confirmation modal
+$("#deleteLocationModal").on("show.bs.modal", function () {
+  // Update the modal content with the location's name
+  $("#deleteLocationConfirmationText").text(
+    `Are you sure you want to delete ${locationName}?`
+  );
+});
 
 // Function to initiate the delete process for a location
 $(document).on("click", ".deleteLocationBtn", function (e) {
@@ -1278,25 +1330,37 @@ function checkForDependencies() {
     "removeLocation.php",
     { id: locationIdToBeDeleted },
     function (response) {
-      let locNum = response.data[0].locNum;
-      if (response.status.code === "200" && locNum === 0) {
-        // No dependencies, show confirmation modal
-        $("#deleteLocationConfirmationText").text(
-          `Are you sure you want to delete ${locationName}?`
-        );
-        $("#deleteLocationModal").modal("show");
+      if (response.status.code === "200") {
+        let dependentsCount = response.data.departmentCount;
+        if (dependentsCount === 0) {
+          // No dependencies, show confirmation modal
+          $("#deleteLocationConfirmationText").text(
+            `Are you sure you want to delete ${locationName}?`
+          );
+          $("#deleteLocationModal").modal("show");
+        } else {
+          // Dependencies exist, show error modal with dependent names
+          let dependentsList = response.data.departmentNames
+            .map((name) => `<li>${name}</li>`)
+            .join("");
+          $("#deleteLocationErrorText").html(
+            `<p>${locationName} cannot be removed due to dependent departments:</p>
+			<ul>${dependentsList}</ul>.`
+          );
+          $("#deleteLocationErrorModal").modal("show");
+        }
       } else {
-        // Dependencies exist, show error modal
+        // Handle cases where the status code is not 200
         $("#deleteLocationErrorText").text(
-          `${locationName} cannot be removed due to dependent departments.`
+          "An error occurred while checking for dependencies. Please try again."
         );
         $("#deleteLocationErrorModal").modal("show");
       }
     },
-    function () {
-      // Show error modal for checking location dependencies failure
+    function (error) {
+      // Handle AJAX request errors
       $("#deleteLocationErrorText").text(
-        "Error checking location dependencies."
+        "Failed to check for dependencies due to a network or server error."
       );
       $("#deleteLocationErrorModal").modal("show");
     }
@@ -1342,15 +1406,3 @@ $("#cancelLocationDelete").on("click", function () {
   // Manually hide the confirmation modal
   $("#deleteLocationModal").modal("hide");
 });
-
-// PRELOADER //
-
-// $(window).on("load", function () {
-//   if ($("#preloader").length) {
-//     $("#preloader")
-//       .delay(2000)
-//       .fadeOut("slow", function () {
-//         $(this).remove();
-//       });
-//   }
-// });

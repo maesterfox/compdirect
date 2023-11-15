@@ -10,10 +10,11 @@
 
   <!-- SEO and Meta Information -->
   <meta name="author" content="David Fox">
-  <meta name="description" content="A web application for maintaining a company personnel database.">
-  
-  <!-- Stylesheets -->
+  <meta name="description" content="Manage your company's personnel database with our web application.">
+  <meta name="keywords" content="personnel database, company database, employee management">
+  <meta name="robots" content="index, follow">
 
+  <!-- Stylesheets -->
   <!-- Make sure to use minified versions for better performance -->
   <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="./node_modules/font-awesome/css/font-awesome.min.css">
@@ -23,7 +24,7 @@
   <title>Company Database</title>
 
   <!-- Favicon -->
-  <link rel="icon" href="biz.png" type="image/png"> <!-- Specifying the type can help some browsers -->
+  <link rel="icon" href="/biz.png" type="image/png"> <!-- Specifying the type can help some browsers -->
 
   <!-- Social Meta Tags -->
   <!-- Twitter -->
@@ -31,24 +32,26 @@
   <meta name="twitter:site" content="@davidfoxtech">
   <meta name="twitter:title" content="Company Database">
   <meta name="twitter:description" content="A web application for maintaining a company personnel database.">
-  <meta name="twitter:image" content="https://davidfoxdev.co.uk/compdirect/some-image.jpg"> <!-- Your image link here -->
+  <meta name="twitter:image" content="https://davidfoxdev.co.uk/compdirect/biz.png"> <!-- Your image link here -->
 
   <!-- Open Graph for Facebook, LinkedIn, etc. -->
   <meta property="og:title" content="Company Database">
   <meta property="og:description" content="A web application for maintaining a company personnel database.">
-  <meta property="og:image" content="https://davidfoxdev.co.uk/compdirect/some-image.jpg"> <!-- Your image link here -->
+  <meta property="og:image" content="https://davidfoxdev.co.uk/compdirect/biz.png"> <!-- Your image link here -->
   <meta property="og:url" content="https://davidfoxdev.co.uk/compdirect">
-
 </head>
+
   
 
 <body>
- <!-- Pre Loader -->
-<!-- <div id="preloader">
-  <div class="spinner"></div>
-</div> -->
+<!-- Pre Loader -->
+<!-- Loader -->
+<div id="loader">
+  <div id="loader-text">Company<br>Directory</div>
+</div>
+
+
 <section>
-  
 
 
   <!-- Top Section with Search and Action Buttons -->
@@ -65,7 +68,7 @@
       </button>
 
       <!-- Filter Button to Trigger Modal for Existing Filters -->
-      <button id="filterBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterModal" aria-label="Filter" data-bs-backdrop="false">
+      <button id="filterBtn" type="button" class="btn btn-primary" data-bs-target="#filterModal" aria-label="Filter" data-bs-backdrop="false">
           <i class="fas fa-filter"></i>
       </button>
 
@@ -76,8 +79,9 @@
 
       <!-- Add New Button -->
       <button id="addBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" aria-label="Add New" data-bs-backdrop="false">
-          <i class="fas fa-plus"></i>
-      </button>
+        <i class="fas fa-plus"></i>
+    </button>
+    
   </div>
 </div>
 
@@ -142,7 +146,7 @@
 </div>
 
 <!-- Filter Modal -->
-<div class="modal" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+<div class="modal" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true" data-bs-backdrop="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary">
@@ -168,7 +172,7 @@
 </div>
 
 <!-- Locations Filter Modal -->
-<div class="modal" id="locationsFilterModal" tabindex="-1" aria-labelledby="locationsFilterModalLabel" aria-hidden="true" data-backdrop="false">
+<div class="modal" id="locationsFilterModal" tabindex="-1" aria-labelledby="locationsFilterModalLabel" aria-hidden="true" data-bs-backdrop="false">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary">
@@ -190,54 +194,34 @@
   </div>
 </div>
 
-
-
-
-
 <!-- Employees -->
 
  <!-- Add Employee Modal -->
  <div class="modal" id="insertNewEmployee" tabindex="-1" aria-labelledby="insertNewEmployeeLabel" aria-hidden="true" data-bs-backdrop="false">
-  <!-- Modal Dialog -->
   <div class="modal-dialog modal-dialog-centered">
-    <!-- Modal Content -->
     <div class="modal-content">
-      <!-- Modal Header -->
       <div class="modal-header bg-primary addEmployeeModal">
         <h5 class="modal-title text-white w-100 text-center" id="modalTitle">Add New Employee</h5>
-        <!-- Close Button -->
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-      <!-- Modal Body -->
       <div class="modal-body">
-        <!-- Employee Form -->
         <form id="addEmployee">
-          <!-- First Name Input -->
           <div class="form-floating mb-3">
             <input type="text" class="form-control" name="firstName" id="addFirstName" required>
             <label for="firstName">First Name</label>
           </div>
-
-          <!-- Last Name Input -->
           <div class="form-floating mb-3">
             <input type="text" class="form-control" name="lastName" required>
             <label for="lastName">Last Name</label>
           </div>
-
-          <!-- Job Title Input -->
           <div class="form-floating mb-3">
             <input type="text" class="form-control" name="jobTitle" placeholder="Optional">
             <label for="jobTitle">Job Title</label>
           </div>
-
-          <!-- Email Input -->
           <div class="form-floating mb-3">
             <input type="email" class="form-control" name="email" required>
             <label for="email">Email</label>
           </div>
-
-          <!-- Department Dropdown -->
           <div class="form-floating mb-3">
             <select class="form-select departments" id="newDeptDrop" name="departmentID" required></select>
             <label for="newDeptDrop">Department</label>
@@ -245,14 +229,10 @@
         </form>
         <div id="newemployeeResponse"></div>
       </div>
-
-      <!-- Modal Footer -->
       <div class="modal-footer">
-        <!-- Cancel Button -->
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
-        <!-- Submit Button -->
         <button type="submit" class="btn btn-primary" form="addEmployee">Add New Employee</button>
       </div>
     </div>
@@ -260,93 +240,56 @@
 </div>
 
 
+
 <!-- Edit Employee Modal -->
-<!-- TODO: Consider making the modal draggable for better UX -->
-<div class="modal" id="editPerson" tabindex="-1" aria-labelledby="editPersonLabel" aria-hidden="true">
-  
-  <!-- Modal Dialog -->
+<div class="modal" id="editPerson" tabindex="-1" aria-labelledby="editPersonLabel" aria-hidden="true" data-bs-backdrop="false">
   <div class="modal-dialog modal-dialog-centered">
-    
-    <!-- Modal Content -->
     <div class="modal-content">
-      
-      <!-- Modal Header -->
       <div class="modal-header bg-primary editPersonModal">
         <h5 class="modal-title w-100 text-center text-white" id="modalTitle">Edit Employee</h5>
-        
-        <!-- Close Button -->
-        <!-- TODO: Change the close button color to make it more visible -->
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      
-      <!-- Modal Body -->
       <div class="modal-body">
-        
-        <!-- Edit Employee Form -->
-        <!-- TODO: Add client-side validation for each input -->
         <form id="editPersonForm">
-          
-          <!-- Hidden Field for Employee ID -->
-          <!-- TODO: Populate this hidden field dynamically -->
           <input type="hidden" id="personId">
-          
-          <!-- First Name Input -->
           <div class="form-floating mb-3">
             <span class="form-floating-text"></span>
             <input type="text" class="form-control" name="firstName" id="editFirstName" required>
             <label for="firstName">First Name</label>
           </div>
-          
-          <!-- Last Name Input -->
           <div class="form-floating mb-3">
             <span class="form-floating-text"></span>
             <input type="text" class="form-control" name="lastName" required>
             <label for="lastName">Last Name</label>
           </div>
-          
-          <!-- Job Title Input -->
           <div class="form-floating mb-3">
             <span class="form-floating-text"></span>
             <input type="text" class="form-control" name="jobTitle" placeholder="Optional">
             <label for="jobTitle">Job Title</label>
           </div>
-          
-          <!-- Email Input -->
           <div class="form-floating mb-3">
             <span class="form-floating-text"></span>
             <input type="email" class="form-control" name="email" required>
             <label for="email">Email</label>
           </div>
-          
-          <!-- Department Dropdown -->
           <div class="form-floating mb-3">
             <span class="form-floating-text"></span>
-            
-            <!-- TODO: Populate this dropdown dynamically from the database -->
             <select class="form-select departments" title="editEmployee" name="departmentID" id='editDept' required></select>
             <label for="departmentID">Department</label>
           </div>
         </form>
-        
-        <!-- TODO: Possibly add a loader/spinner here to show while waiting for server response -->
         <div id="editEmployeeResponse"></div>
       </div>
-      
-      <!-- Modal Footer -->
       <div class="modal-footer">
-        
-        <!-- Cancel Button -->
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
-        
-        <!-- Submit Changes Button -->
-        <!-- TODO: Add a confirmation dialog before submitting changes -->
         <button type="submit" class="btn btn-primary" form="editPersonForm">Submit Changes</button>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" data-bs-backdrop="false">
@@ -404,7 +347,7 @@
 
 
   <!-- Edit Department -->
-  <div class="modal" id="editDept2" tabindex="-1" aria-labelledby="editDeptLabel" aria-hidden="true">
+  <div class="modal" id="editDept2" tabindex="-1" aria-labelledby="editDeptLabel" aria-hidden="true" data-bs-backdrop="false">
     <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary">
@@ -435,6 +378,22 @@
   </div>
 </div>
 
+<!-- Department Dependency Error Modal -->
+<div class="modal fade" id="deleteDeptErrorModal" tabindex="-1" aria-labelledby="deleteDeptErrorModalLabel" aria-hidden="true" data-bs-backdrop="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger">
+        <h4 class="modal-title text-white w-100 text-center" id="deleteDeptErrorModalLabel">Employee Dependency</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="deleteDeptErrorModalBody">
+        <!-- Department dependency error message content goes here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Delete Department Confirmation Modal -->
 <div class="modal fade" id="deleteDeptModal" tabindex="-1" aria-labelledby="deleteDeptModalLabel" aria-hidden="true" data-bs-backdrop="false">
@@ -461,7 +420,7 @@
     <!--LOCATIONS -->
 
     <!-- Add Location -->
-    <div class="modal" id="insertNewLocation" tabindex="-1" aria-labelledby="insertNewLocationLabel" aria-hidden="true">
+    <div class="modal" id="insertNewLocation" tabindex="-1" aria-labelledby="insertNewLocationLabel" aria-hidden="true" data-bs-backdrop="false">
 
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -491,7 +450,7 @@
 
 
     <!-- Edit Location -->
-<div class="modal" id="editLocation" tabindex="-1" aria-labelledby="editLocationLabel" aria-hidden="true">
+<div class="modal" id="editLocation" tabindex="-1" aria-labelledby="editLocationLabel" aria-hidden="true" data-bs-backdrop="false">
   <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header bg-primary">
@@ -572,7 +531,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-danger">
-        <h4 class="modal-title text-white w-100 text-center" id="deleteLocationErrorModalLabel">Error</h4>
+        <h4 class="modal-title text-white w-100 text-center" id="deleteLocationErrorModalLabel">Department Dependency</h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -736,7 +695,7 @@
       <a href="https://www.linkedin.com/in/davidfoxtechcode" target="_blank" rel="noopener" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
       <a href="https://github.com/maesterfox" target="_blank" rel="noopener" title="GitHub"><i class="fab fa-github"></i></a>
       <a href="https://stackoverflow.com/users/22631288/david-fox" target="_blank" rel="noopener" title="Stack Overflow"><i class="fab fa-stack-overflow"></i></a>
-      <a href="https://davidfoxfoxdev.co.uk" target="_blank" rel="noopener" title="My Portfolio Website"><i class="fas fa-globe"></i></a>
+      <a href="https://davidfoxdev.co.uk" target="_blank" rel="noopener" title="My Portfolio Website"><i class="fas fa-globe"></i></a>
     </div>
   </footer>
 </section>
