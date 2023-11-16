@@ -7,6 +7,7 @@ body {
   margin: 5px 0px 5px 2px;
   padding: 5px 0px 5px 2px;
   overflow: hidden;
+  font-family: 'Poppins', sans-serif;
 }
 
 section {
@@ -23,7 +24,7 @@ section {
   .nav-item {
     .nav-link {
       margin: 5px;
-      i.fas { font-size: 2em; }
+      i.fas { font-size: 3em; }
 
       &.active, &:hover {
         box-shadow: 0 0 5px white;
@@ -212,7 +213,7 @@ $toastGreenBrighter: lime;
     overflow-x: auto; // Allow horizontal scrolling on smaller screens
 
     table th, table td {
-      font-size: 0.8em;
+      font-size: 1em;
     }
 
     .tableHide { display: none; }
@@ -258,10 +259,3 @@ $toastGreenBrighter: lime;
   100% { transform: translateY(-200%); }
 }
 
-// Basic Styling
-html, body {
-  background-color: #f9f6ee;
-  font-family: 'Poppins', sans-serif;
-  margin: 5px;
-  overflow: hidden;
-}

@@ -18,9 +18,11 @@ if (mysqli_connect_errno()) {
   mysqli_close($conn);
   exit;
 }
-
 // Updated SQL query to count the number of employees in a department
-$query = $conn->prepare('SELECT COUNT(*) as employeeCount FROM personnel WHERE departmentID = ?');
+$query = $conn->prepare('SELECT d.name AS departmentName, COUNT(p.id) as personnelCount 
+FROM department d 
+LEFT JOIN personnel p ON (p.departmentID = d.id) 
+WHERE d.id = ?');
 
 $query->bind_param("i", $_REQUEST['id']);
 $query->execute();
@@ -37,12 +39,14 @@ if (false === $query) {
 
 $result = $query->get_result();
 
+
 $row = mysqli_fetch_assoc($result);
 
 $output = [
   'status' => ['code' => "200", 'name' => "ok", 'description' => "success"],
   'data' => [
-    'employeeCount' => $row['employeeCount']
+    'departmentName' => $row['departmentName'],
+    'personnelCount' => $row['personnelCount']
   ]
 ];
 

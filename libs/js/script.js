@@ -1231,17 +1231,18 @@ function checkDeptForDependencies() {
     { id: departmentIdToBeDeleted },
     function (response) {
       if (response.status.code === "200") {
-        let employeeCount = response.data.employeeCount;
-        if (employeeCount === 0) {
+        let personnelCount = response.data.personnelCount;
+        let departmentName = response.data.departmentName;
+        if (personnelCount === 0) {
           // No dependencies, show confirmation modal
           $("#deleteDeptConfirmationText").text(
-            `Are you sure you want to delete ${departmentName}?`
+            `Are you sure you want to delete the ${departmentName} department?`
           );
           $("#deleteDeptModal").modal("show");
         } else {
           // Dependencies exist, show error modal indicating number of dependent employees
           $("#deleteDeptErrorModalBody").html(
-            `<p>${departmentName} cannot be removed as it is associated with ${employeeCount} employee(s).</p>`
+            `<p>The ${departmentName} department cannot be removed as it is associated with ${personnelCount} employee(s).</p>`
           );
           $("#deleteDeptErrorModal").modal("show");
         }

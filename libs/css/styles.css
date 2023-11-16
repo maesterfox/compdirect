@@ -4,7 +4,8 @@ body {
   background-color: #f9f6ee;
   margin: 5px 0px 5px 2px;
   padding: 5px 0px 5px 2px;
-  overflow: hidden; }
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif; }
 
 section {
   display: flex;
@@ -16,7 +17,7 @@ section {
   .nav-pills .nav-item .nav-link, .nav-tabs .nav-item .nav-link {
     margin: 5px; }
     .nav-pills .nav-item .nav-link i.fas, .nav-tabs .nav-item .nav-link i.fas {
-      font-size: 2em; }
+      font-size: 3em; }
     .nav-pills .nav-item .nav-link.active, .nav-pills .nav-item .nav-link:hover, .nav-tabs .nav-item .nav-link.active, .nav-tabs .nav-item .nav-link:hover {
       box-shadow: 0 0 5px white; }
       .nav-pills .nav-item .nav-link.active.nav-tabs, .nav-pills .nav-item .nav-link:hover.nav-tabs, .nav-tabs .nav-item .nav-link.active.nav-tabs, .nav-tabs .nav-item .nav-link:hover.nav-tabs {
@@ -119,7 +120,7 @@ a, button {
   .table-wrapper-scroll-y, .table-wrapper {
     overflow-x: auto; }
     .table-wrapper-scroll-y table th, .table-wrapper-scroll-y table td, .table-wrapper table th, .table-wrapper table td {
-      font-size: 0.8em; }
+      font-size: 1em; }
     .table-wrapper-scroll-y .tableHide, .table-wrapper .tableHide {
       display: none; } }
 
@@ -154,9 +155,3 @@ a, button {
     transform: translateY(0%); }
   100% {
     transform: translateY(-200%); } }
-
-html, body {
-  background-color: #f9f6ee;
-  font-family: 'Poppins', sans-serif;
-  margin: 5px;
-  overflow: hidden; }
