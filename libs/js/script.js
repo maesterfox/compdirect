@@ -1230,25 +1230,18 @@ function checkDeptForDependencies() {
     "deleteDept.php",
     { id: departmentIdToBeDeleted },
     function (response) {
-      // console.log("Response received:", response); // Log the response
       if (response.status.code === "200") {
-        let dependentsCount = response.data.departmentCount;
-        if (dependentsCount === 0) {
+        let employeeCount = response.data.employeeCount;
+        if (employeeCount === 0) {
           // No dependencies, show confirmation modal
-          // console.log("Modal should show now: No dependencies"); // Log confirmation
           $("#deleteDeptConfirmationText").text(
             `Are you sure you want to delete ${departmentName}?`
           );
           $("#deleteDeptModal").modal("show");
         } else {
-          // Dependencies exist, show error modal with employee names
-          let dependentsList = response.data.employeeNames
-            .map((name) => `<li>${name}</li>`)
-            .join(""); // Convert the array to a list of <li> elements
-          console.log("Modal should show now: Dependencies exist"); // Log dependencies
+          // Dependencies exist, show error modal indicating number of dependent employees
           $("#deleteDeptErrorModalBody").html(
-            `<p>${departmentName} cannot be removed due to the following dependent employees:</p>
-             <ul>${dependentsList}</ul>` // Display the list in an unordered list
+            `<p>${departmentName} cannot be removed as it is associated with ${employeeCount} employee(s).</p>`
           );
           $("#deleteDeptErrorModal").modal("show");
         }

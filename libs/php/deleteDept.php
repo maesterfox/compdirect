@@ -19,8 +19,8 @@ if (mysqli_connect_errno()) {
   exit;
 }
 
-// Updated SQL query to fetch employee names and order by last name
-$query = $conn->prepare('SELECT p.lastName, p.firstName FROM personnel p WHERE p.departmentID = ? ORDER BY p.lastName, p.firstName');
+// Updated SQL query to count the number of employees in a department
+$query = $conn->prepare('SELECT COUNT(*) as employeeCount FROM personnel WHERE departmentID = ?');
 
 $query->bind_param("i", $_REQUEST['id']);
 $query->execute();
@@ -37,16 +37,12 @@ if (false === $query) {
 
 $result = $query->get_result();
 
-$employeeNames = [];
-while ($row = mysqli_fetch_assoc($result)) {
-  array_push($employeeNames, $row['lastName'] . ', ' . $row['firstName']);
-}
+$row = mysqli_fetch_assoc($result);
 
 $output = [
   'status' => ['code' => "200", 'name' => "ok", 'description' => "success"],
   'data' => [
-    'departmentCount' => count($employeeNames),
-    'employeeNames' => $employeeNames
+    'employeeCount' => $row['employeeCount']
   ]
 ];
 

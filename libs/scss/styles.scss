@@ -1,5 +1,227 @@
 @import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
 
+
+html,
+body {
+  background-color: #f9f6ee;
+  margin: 5px 0px 5px 2px;
+  padding: 5px 0px 5px 2px;
+  overflow: hidden;
+}
+
+section {
+  display: flex;
+  flex-flow: column;
+  height: calc(100vh - 20px);
+}
+
+
+// Navigation Styles
+.nav-pills, .nav-tabs {
+  border: none;
+
+  .nav-item {
+    .nav-link {
+      margin: 5px;
+      i.fas { font-size: 2em; }
+
+      &.active, &:hover {
+        box-shadow: 0 0 5px white;
+        &.nav-tabs { background-color: #007bff; color: white; }
+      }
+    }
+  }
+}
+
+// Global Link and Button Styles
+a, button {
+  transition: all 0.3s ease-in-out;
+
+  &:hover { box-shadow: 0 0 5px white; }
+}
+
+// Navbar Styles
+// #navbar {
+//   margin-top: 0;
+//   padding: 10px;
+//   border-radius: 0 0 10px 10px;
+//   position: sticky;
+//   top: 0;
+//   z-index: 1000;
+//   opacity: 0;
+// }
+
+// Flex Containers
+#searchAndFilter, #icons {
+  display: flex;
+}
+
+// Flex Container for Tables
+.table-wrapper, .table-wrapper-scroll-y {
+  table {
+    width: 100%;
+
+    td {
+      min-height: 2.5em;
+      text-align: center;
+
+      // Last column (button column)
+      &:last-child {
+        width: 150px; // Adjust if needed
+
+        .d-flex {
+          justify-content: space-around; // Distribute space evenly around items
+          align-items: center;
+          gap: 5px; // Small gap between buttons
+          
+        }
+      }
+
+      // Styles for specific columns
+      &:nth-child(3), &:nth-last-child(2) {
+        width: 110px;
+      }
+
+      // Text alignment for non-button cells
+      &:not(:last-child) { 
+        text-align: left; 
+      }
+    }
+
+    tr {
+      cursor: default;
+    }
+  }
+}
+
+
+// Ensuring scrolling in the tab content
+.tab-content {
+  flex: 1;
+  overflow-y: auto; // Enables scrolling if content overflows
+}
+
+
+
+
+// Button Styling
+.btn-primary {
+  position: relative;
+  z-index: 1;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+    z-index: -1;
+  }
+}
+
+
+
+// Footer Styling
+#company-directory-footer {
+  text-align: center;
+  padding: 20px;
+  color: #fff;
+  box-shadow: none;
+  border: none;
+
+  p {
+    color: #1d0707;
+    margin: 0;
+    padding: 0;
+    font-size: 1em;
+  }
+
+  #icon-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    a {
+      color: #775959;
+      text-decoration: none;
+      font-size: 1.5em;
+
+      &:hover { color: #1d0707; }
+    }
+  }
+}
+
+// Toast Styling
+
+// Define color variables for .toast-red and .toast-green
+$toastRed: #911c1c;
+$toastRedBrighter: red;
+$toastGreen: #218838;
+$toastGreenBrighter: lime;
+
+// Toast position placeholder
+%toast-position {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.9;
+  z-index: 9999;
+}
+
+// Toast-red styling
+.toast-red {
+  box-shadow: 0 0 2px $toastRed, 0 0 6px $toastRed, 0 0 10px $toastRedBrighter;
+  border: 1px solid $toastRed;
+  background-color: $toastRed;
+  color: white;
+
+  .toast-header {
+    background-color: darken($toastRed, 10%);
+    color: white;
+    text-shadow: 0 0 2px white;
+    font-size: 1.2rem;
+  }
+
+  .toast-body { color: white; }
+}
+
+// Toast-green styling
+.toast-green {
+  box-shadow: 0 0 2px $toastGreen, 0 0 6px $toastGreen, 0 0 10px $toastGreenBrighter;
+  border: 1px solid $toastGreen;
+  background-color: $toastGreen;
+  color: white;
+
+  .toast-header {
+    background-color: darken($toastGreen, 10%);
+    color: white;
+    text-shadow: 0 0 2px white;
+    font-size: 1.2rem;
+  }
+
+  .toast-body { color: white; }
+}
+
+// Responsive Design for Smaller Screens
+@media (max-width: 768px) {
+  .table-wrapper-scroll-y, .table-wrapper {
+    overflow-x: auto; // Allow horizontal scrolling on smaller screens
+
+    table th, table td {
+      font-size: 0.8em;
+    }
+
+    .tableHide { display: none; }
+  }
+}
+
+
+
+
 // Preloader
 #loader {
   position: fixed;
@@ -42,192 +264,4 @@ html, body {
   font-family: 'Poppins', sans-serif;
   margin: 5px;
   overflow: hidden;
-}
-
-// Page Sections
-section {
-  background-color: #f9f6ee;
-  display: flex;
-  flex-flow: column;
-  height: calc(100vh - 20px);
-}
-
-// Footer Styling
-#company-directory-footer {
-  text-align: center;
-  padding: 20px;
-  color: #fff;
-  box-shadow: none;
-  border: none;
-
-  p {
-    color: #1d0707;
-    margin: 0;
-    padding: 0;
-    font-size: 1em;
-  }
-
-  #icon-row {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-
-    a {
-      color: #775959;
-      text-decoration: none;
-      font-size: 1.5em;
-
-      &:hover { color: #1d0707; }
-    }
-  }
-}
-
-// Navigation Styles
-.nav-pills, .nav-tabs {
-  border: none;
-
-  .nav-item {
-    .nav-link {
-      margin: 5px;
-      i.fas { font-size: 2em; }
-
-      &.active, &:hover {
-        box-shadow: 0 0 5px white;
-        &.nav-tabs { background-color: #007bff; color: white; }
-      }
-    }
-  }
-}
-
-// Global Link and Button Styles
-a, button {
-  transition: all 0.3s ease-in-out;
-
-  &:hover { box-shadow: 0 0 5px white; }
-}
-
-// Navbar Styles
-#navbar {
-  margin-top: 0;
-  padding: 10px;
-  border-radius: 0 0 10px 10px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  opacity: 0;
-}
-
-// Flex Containers
-#searchAndFilter, #icons {
-  display: flex;
-}
-
-// Table Styles
-.table-wrapper, .table-wrapper-scroll-y {
-  border-radius: 8px;
-  height: 43.75em;
-  overflow-y: auto;
-
-  table {
-    min-width: 100%;
-
-    th, td {
-      min-height: 2em;
-      text-align: center;
-
-      &:nth-child(3), &:nth-last-child(2), &:last-child {
-        width: 110px;
-      }
-    }
-
-    td { text-align: left; }
-  }
-}
-
-// Tab Pane Transition
-.tab-pane {
-  transition: opacity 0.5s ease-in-out;
-  overflow-y: auto;
-
-  &.fade {
-    opacity: 0;
-    display: block;
-    height: 0;
-    overflow: hidden;
-  }
-
-  &.show {
-    opacity: 1;
-    height: auto;
-  }
-}
-
-// Button Styling
-.btn-primary {
-  position: relative;
-  z-index: 1;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.1));
-    z-index: -1;
-  }
-}
-
-// Toast Styling
-#myToast, #editLocationConfirmToast, #confirmEmployeeDelete, #editEmployeeConfirmToast, #confirmDeptDelete, #confirmLocationDelete, #successToast, #editDeptConfirmToast {
-  @extend .toast-position;
-}
-
-%toast-position {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.9;
-  z-index: 9999;
-}
-
-.toast-red, .toast-green {
-  box-shadow: 0 0 2px $color, 0 0 6px $color, 0 0 10px $brighter-color;
-  border: 1px solid $color;
-  background-color: $color;
-  color: white;
-
-  .toast-header {
-    background-color: darken($color, 10%);
-    color: white;
-    text-shadow: 0 0 2px white;
-    font-size: 1.2rem;
-  }
-
-  .toast-body { color: white; }
-}
-
-.toast-red { $color: #911c1c; $brighter-color: red; }
-.toast-green { $color: #218838; $brighter-color: lime; }
-
-// Responsive Design for Smaller Screens
-@media (max-width: 768px) {
-  #company-directory-heading {
-    margin-bottom: -15%;
-    font-size: 2em;
-  }
-
-  .table-wrapper-scroll-y, .table-wrapper {
-    height: 30.75em;
-    overflow-x: auto;
-
-    table th, table td {
-      font-size: 0.8em;
-    }
-
-    .tableHide { display: none; }
-  }
 }
