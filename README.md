@@ -1,40 +1,34 @@
 # Company Personnel Database Web Application
 
-## Project Overview
-This web application allows for the maintenance of a company personnel database to see who's who, who reports to who, and where they are. It is designed to be responsive, working on both desktop and mobile devices.
+## Overview
+This responsive web application efficiently manages a company's personnel database, facilitating insights into employee hierarchies, departmental structures, and location details. Designed for optimal performance on both desktop and mobile platforms.
 
-## Author
-David Fox
+## Developed by David Fox
 
-## Technologies Used
-- HTML / CSS (SCSS)
-- JavaScript
-- jQuery (DOM manipulation / AJAX)
-- PHP with JSON encoding
-- MySQL or MariaDB
+### Key Technologies
+- Frontend: HTML, CSS (with SCSS for styling), JavaScript, jQuery for seamless DOM manipulation and AJAX calls.
+- Backend: PHP with JSON encoding for efficient server-client communication.
+- Database: Compatible with both MySQL and MariaDB.
 
-## Development Environment
-To prototype and develop solutions locally, a web server with PHP support is needed. It is recommended to use VirtualBox and configure virtual machine(s) based on a free Linux distro for a professional development environment.
+### Development Setup
+Leverage a VirtualBox setup with a Linux distro for a robust development environment, supporting PHP out of the box.
 
-## Minimum Functionality
-The application allows users to:
-- Add, edit, and delete personnel records
-- View personnel by department and location
-- Search personnel records
+### Features
+- CRUD operations for personnel records.
+- Advanced filters by department and location.
+- Quick search across personnel records.
 
-## Setup
-1. Clone the GitHub repository.
-2. Run the SQL script to create the database.
-3. Update the database configurations in the PHP files.
-4. Serve the application using a web server with PHP support.
+### Getting Started
+1. Clone the repo.
+2. Execute the provided SQL script for database setup.
+3. Configure database connections in PHP.
+4. Deploy on a PHP-enabled server.
 
-## Meta Tags
-- **Author**: David Fox
-- **Description**: A web application for maintaining a company personnel database.
-- **Keywords**: HTML, CSS, JavaScript, jQuery, PHP, MySQL, Company Database
+### SEO and Accessibility
+Meta tags included for enhanced search engine visibility and accessibility.
 
-## License
-This project is open-source, available under the MIT License.
+### Open Source License
+Released under the MIT License, promoting open collaboration.
 
-## Contact
-For any queries, feel free to contact David Fox.
+### Support
+Reach out to David Fox for any support or queries regarding this project.
