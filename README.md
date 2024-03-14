@@ -1,5 +1,7 @@
 # Company Personnel Database Web Application
 
+IT Caeer Switch Project 2
+
 ## Overview
 This responsive web application efficiently manages a company's personnel database, facilitating insights into employee hierarchies, departmental structures, and location details. Designed for optimal performance on both desktop and mobile platforms.
 
